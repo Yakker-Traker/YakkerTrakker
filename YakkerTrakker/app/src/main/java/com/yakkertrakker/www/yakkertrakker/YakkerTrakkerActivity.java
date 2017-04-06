@@ -40,6 +40,8 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
 
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
+        LatLng one = new LatLng(-30, 145);
+        mMap.addMarker(new MarkerOptions().position(one).title("One"));
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
