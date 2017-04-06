@@ -73,18 +73,16 @@ public abstract class Yak_Trak_SQLite extends SQLiteOpenHelper {
 
         SQLiteDatabase Yak_Trak_Database = this.getReadableDatabase();
 
-        String COMMAND = "SELECT * FROM"  + ROUTES_TABLE +";";
+        String COMMAND = "SELECT * FROM"  + COORDINATES_TABLE +" WHERE" + route.getRoute_name() + " = route_name ;";
 
         Cursor cursor = Yak_Trak_Database.rawQuery(COMMAND,null);
 
-        if (cursor.moveToLast()){
+        if (cursor.moveToFirst()){
             do {
-                Coordinates point = new Coordinates();
-                if(route.getRoute_name() == cursor.getString(2)) {
+                    Coordinates point = new Coordinates();
                     point.setLatitude(cursor.getInt(0));
                     point.setLongitude(cursor.getInt(1));
-                }
-                coordinates_list.add(point);
+                    coordinates_list.add(point);
             }while(cursor.moveToNext());
         }
         return coordinates_list;
