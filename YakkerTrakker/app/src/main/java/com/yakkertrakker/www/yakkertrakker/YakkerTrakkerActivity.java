@@ -1,7 +1,15 @@
 package com.yakkertrakker.www.yakkertrakker;
 
+import java.util.List;
+
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+//import android.support.v4.widget.SearchViewCompatIcs;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -10,18 +18,41 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import SQLite.Coordinates;
+import SQLite.Routes;
+import SQLite.Yak_Trak_SQLite;
+
 public class YakkerTrakkerActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_yakker_trakker);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
+    // Code to test the data base test ignore or delete, not going to be included in the final app.
+        Button dbButton;
+        dbButton = (Button)findViewById(R.id.DataBaseButtom);
+
+        dbButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                sendtoDataBase(v);
+            }
+        });
+    }
+
+    public void sendtoDataBase (View view){
+       Intent intent = new Intent(this, Data_Base_Test.class);
+       startActivity(intent);
+
     }
 
 
