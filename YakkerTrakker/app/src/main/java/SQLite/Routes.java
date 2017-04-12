@@ -37,6 +37,9 @@ public class Routes {
         this.route_name = route_name;
     }
 
+    public void setDate_created (String date_created){
+            this.date_created = date_created;
+    }
     public void setComments (String comments){
         this.comments = comments;
     }

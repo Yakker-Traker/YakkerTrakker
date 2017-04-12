@@ -38,7 +38,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Data_Base_Test"></activity>
+        <activity android:name=".Data_Base_Test" />
     </application>
 
 </manifest>

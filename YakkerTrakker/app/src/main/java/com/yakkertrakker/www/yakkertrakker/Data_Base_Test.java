@@ -47,6 +47,7 @@ public class Data_Base_Test extends AppCompatActivity {
                     db.addRouteIntoDataBase(route);
                 }
                 data_message.setText("The Route was inserted");
+
             }
         });
 

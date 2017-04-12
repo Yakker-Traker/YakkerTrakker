@@ -36,11 +36,27 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+    // Starting to implement the main button.
+        final Button mainButton;
+        mainButton = (Button)findViewById(R.id.main_Button);
+        mainButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick (View v){
+                if (mainButton.getText() == "Comming Soon !"){
+                    mainButton.setText("=");
+                }
+                else {
+                    mainButton.setText("Comming Soon !");
+                }
+            }
+
+        });
+
+
 
     // Code to test the data base test ignore or delete, not going to be included in the final app.
         Button dbButton;
         dbButton = (Button)findViewById(R.id.DataBaseButtom);
-
         dbButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -50,8 +66,8 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     }
 
     public void sendtoDataBase (View view){
-       Intent intent = new Intent(this, Data_Base_Test.class);
-       startActivity(intent);
+       Intent db_intent = new Intent(this, Data_Base_Test.class);
+       startActivity(db_intent);
 
     }
 

@@ -114,6 +114,28 @@ public class Yak_Trak_SQLite extends SQLiteOpenHelper {
         Yak_Trak_Database.close();
     }
 
+    public List<Routes> getAllRoutesFromDataBase (){
+        SQLiteDatabase Yak_Trak_Database = this.getWritableDatabase();
+        List RouteList = new LinkedList <Routes>();
+
+        String COMMAND = "SELECT * FROM " + ROUTES_TABLE + ';';
+        Cursor cursor = Yak_Trak_Database.rawQuery(COMMAND,null);
+
+        if (cursor.moveToFirst()){
+            do{
+                Routes route = new Routes ();
+                route.setId(cursor.getInt(0));
+                route.setRoute_name(cursor.getString(1));
+                route.setDate_created(cursor.getString(2));
+                route.setComments(cursor.getString(3));
+                RouteList.add(route);
+            }while (cursor.moveToNext());
+
+        }
+        Yak_Trak_Database.close();
+        return RouteList;
+    }
+
     // Adds a coordinate to the coordinates table.
     public void addCoordinateIntoDataBase(Coordinates coordinates) {
         SQLiteDatabase Yak_Trak_Database = this.getWritableDatabase();

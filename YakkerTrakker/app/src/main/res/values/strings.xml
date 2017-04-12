@@ -3,6 +3,10 @@
     <string name="title_activity_yakker_trakker">Trakker</string>
 
 
+    <string name="main_button">=</string>
+    <string name="Start_Text">Start Route</string>
+    <string name="Stop_Text">Stop Route</string>
+
     //Data base testing
     <string name="db_Button_Name">Start DataBase Test</string>
     <string name="Add_Route_Button">Add Route</string>
