@@ -10,6 +10,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.widget.CompoundButton;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -33,11 +35,14 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     Location mLastLocation;
     Marker currLocationMarker;
     LocationRequest mLocationRequest;
+    ToggleButton startStop;
+    Boolean routeStarted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_yakker_trakker);
+        routeStarted = false;
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             checkLocationPermission();
@@ -91,6 +96,41 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             mMap.setMyLocationEnabled(true);
         }
 
+        startStop = (ToggleButton)findViewById(R.id.start_stop);
+        startStop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked == true){
+                    //If button is pressed, place marker at last known location so long as it is not null
+                    if(mLastLocation != null){
+                        //Push location to database here
+                        MarkerOptions newMarker = new MarkerOptions();
+                        newMarker.position(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()));
+                        newMarker.title("Start");
+                        newMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                        currLocationMarker = mMap.addMarker(newMarker);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
+                    }
+                    routeStarted = true;
+                }
+                else{
+                    if(mLastLocation != null){
+                        //Push location to database here
+                        MarkerOptions newMarker = new MarkerOptions();
+                        newMarker.position(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()));
+                        newMarker.title("End");
+                        newMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                        currLocationMarker = mMap.addMarker(newMarker);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
+
+                    }
+                    routeStarted = true;
+                }
+            }
+        });
+
         /*
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
@@ -108,13 +148,21 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
 
     }
 
@@ -130,25 +178,32 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
 
     @Override
     public void onLocationChanged(Location location) {
-        mLastLocation = location;
-        if(currLocationMarker != null){
-            currLocationMarker.remove();
+        if(routeStarted == true) {
+            mLastLocation = location;
+            if (currLocationMarker != null) {
+                //currLocationMarker.remove();
+            }
+
+            double newLat = location.getLatitude();
+            double newLong = location.getLongitude();
+            String newLatStr = Double.toString(newLat);
+            String newLongStr = Double.toString(newLong);
+            String titleStr = new StringBuilder().append(newLatStr).append(" + ").append(newLongStr).toString();
+
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.title(titleStr);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            currLocationMarker = mMap.addMarker(markerOptions);
+
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
+
+            if (mGoogleApiClient != null) {
+                //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            }
         }
-
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-        currLocationMarker = mMap.addMarker(markerOptions);
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
-
-        if(mGoogleApiClient != null){
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
-
     }
     //End Main
 }
