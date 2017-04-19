@@ -1,5 +1,16 @@
 package com.yakkertrakker.www.yakkertrakker;
 
+
+import java.util.List;
+
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+//import android.support.v4.widget.SearchViewCompatIcs;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -26,7 +37,14 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 
+import SQLite.Coordinates;
+import SQLite.Routes;
+import SQLite.Yak_Trak_SQLite;
+
+
+
 public class YakkerTrakkerActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -36,6 +54,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_yakker_trakker);
 
@@ -46,6 +65,40 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+    // Starting to implement the main button.
+        final Button mainButton;
+        mainButton = (Button)findViewById(R.id.main_Button);
+        mainButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick (View v){
+                if (mainButton.getText() == "Comming Soon !"){
+                    mainButton.setText("=");
+                }
+                else {
+                    mainButton.setText("Comming Soon !");
+                }
+            }
+
+        });
+
+
+
+    // Code to test the data base test ignore or delete, not going to be included in the final app.
+        Button dbButton;
+        dbButton = (Button)findViewById(R.id.DataBaseButtom);
+        dbButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                sendtoDataBase(v);
+            }
+        });
+    }
+
+    public void sendtoDataBase (View view){
+       Intent db_intent = new Intent(this, Data_Base_Test.class);
+       startActivity(db_intent);
+
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;

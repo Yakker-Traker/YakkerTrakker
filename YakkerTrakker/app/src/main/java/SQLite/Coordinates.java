@@ -5,10 +5,12 @@ package SQLite;
  */
 
 public class Coordinates {
-    private int id;
     private float latitude;
     private float longitude;
     private String route_name;
+
+    // Used for the database
+    private int id;
 
     public Coordinates (){}
 
@@ -16,6 +18,7 @@ public class Coordinates {
         this.latitude = latitude;
         this.longitude = longitude;
         this.route_name = route_name;
+        this.id = 0;
     }
 
     public float getLatitude(){
@@ -30,11 +33,21 @@ public class Coordinates {
         return route_name;
     }
 
+    public int get_id(){ return id;}
+
     public void setLatitude (float latitude){
         this.latitude = latitude;
     }
 
-    public void setLongitude(float longitude){
+    public void setLongitude(float longitude) {
         this.longitude = longitude;
+    }
+
+    public void setRoute_name(String route_name){
+        this.route_name = route_name;
+    }
+
+    public void setId (int x){
+        this.id = x;
     }
 }

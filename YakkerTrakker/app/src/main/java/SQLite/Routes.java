@@ -9,6 +9,8 @@ public class Routes {
     private String date_created;
     private String comments  = " ";
 
+    private int id;
+
     public Routes (){}
 
     public Routes (String route_name, String date_created, String comments){
@@ -19,16 +21,31 @@ public class Routes {
         }
     }
 
-    String getRoute_name (){
+    public String getRoute_name (){
         return route_name;
     }
 
-    String getDate_created (){
+    public String getDate_created (){
         return date_created;
     }
 
-    String getComments (){
-        return comments;
+    public String getComments (){return comments; }
+
+    public int  get_Id (){return id; }
+
+    public void setRoute_name(String route_name){
+        this.route_name = route_name;
+    }
+
+    public void setDate_created (String date_created){
+            this.date_created = date_created;
+    }
+    public void setComments (String comments){
+        this.comments = comments;
+    }
+
+    public void setId (int x){
+        this.id = x;
     }
 }
 

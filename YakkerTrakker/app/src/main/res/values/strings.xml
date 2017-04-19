@@ -1,4 +1,20 @@
 <resources>
     <string name="app_name">Yakker Trakker</string>
     <string name="title_activity_yakker_trakker">Trakker</string>
+
+
+    <string name="main_button">=</string>
+    <string name="Start_Text">Start Route</string>
+    <string name="Stop_Text">Stop Route</string>
+
+    //Data base testing
+    <string name="db_Button_Name">Start DataBase Test</string>
+    <string name="Add_Route_Button">Add Route</string>
+    <string name="Delete_Route_Button">Delete Route</string>
+    <string name="Random_Coordinates_Button">Generate Random Coordinates for Route</string>
+    <string name="Enter_Route_Name">Enter Route Name</string>
+    <string name="Enter_Date">Enter Date</string>
+    <string name="Enter_Comments">Enter Comments</string>
+    <string name="Delete_Routes">Delete Route From the Database</string>
+    <string name="Data_Message">Data Base Query Complete</string>
 </resources>
