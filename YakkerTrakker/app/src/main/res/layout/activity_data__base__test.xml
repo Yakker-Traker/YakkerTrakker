@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id= "@+id/route_name_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/Enter_Route_Name"/>
+    <EditText
+        android:id= "@+id/route_date_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/Enter_Date"/>
+    <EditText
+        android:id= "@+id/route_comment_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/Enter_Comments"/>
+    <Button
+        android:id="@+id/insertRouteButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Add_Route_Button"/>
+    <EditText
+        android:id= "@+id/route_name_random"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/Enter_Route_Name"/>
+    <Button
+        android:id="@+id/generateRandomCooridantes_Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Random_Coordinates_Button"/>
+    <EditText
+        android:id= "@+id/route_name_delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/Enter_Route_Name"/>
+    <Button
+        android:id="@+id/deleteRouteButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Delete_Route_Button"/>
+    <TextView
+        android:id="@+id/data_message_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Data_Message"/>
+
+</LinearLayout>
