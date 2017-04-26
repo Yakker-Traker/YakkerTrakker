@@ -46,23 +46,12 @@ import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 
-<<<<<<< HEAD
 import SQLite.Routes;
 import SQLite.Coordinates;
 import SQLite.Yak_Trak_SQLite;
 
 
 public class YakkerTrakkerActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, com.google.android.gms.common.api.Result {
-=======
-import SQLite.Coordinates;
-import SQLite.Routes;
-import SQLite.Yak_Trak_SQLite;
-
-
-
-public class YakkerTrakkerActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
->>>>>>> b1529b412607f8a28af4eb918f779de8a554f713
-
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -91,43 +80,6 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-<<<<<<< HEAD
-        //If we saved something, reinitialize it.
-=======
-
-    // Starting to implement the main button.
-        final Button mainButton;
-        mainButton = (Button)findViewById(R.id.main_Button);
-        mainButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick (View v){
-                if (mainButton.getText() == "Comming Soon !"){
-                    mainButton.setText("=");
-                }
-                else {
-                    mainButton.setText("Comming Soon !");
-                }
-            }
-
-        });
-
-
-
-    // Code to test the data base test ignore or delete, not going to be included in the final app.
-        Button dbButton;
-        dbButton = (Button)findViewById(R.id.DataBaseButtom);
-        dbButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                sendtoDataBase(v);
-            }
-        });
-    }
-
-    public void sendtoDataBase (View view){
-       Intent db_intent = new Intent(this, Data_Base_Test.class);
-       startActivity(db_intent);
->>>>>>> b1529b412607f8a28af4eb918f779de8a554f713
 
     }
 
@@ -279,30 +231,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState){
         super.onRestoreInstanceState(savedInstanceState);
-        if(savedInstanceState != null){
 
-            if(savedInstanceState.containsKey(getResources().getString(R.string.started_string))){
-                Toast.makeText(this, "routeStarted Save", Toast.LENGTH_SHORT).show();
-                routeStarted = savedInstanceState.getParcelable(getResources().getString(R.string.started_string));
-            }
-
-            if(savedInstanceState.containsKey(getResources().getString(R.string.routes_string))){
-                checkLocationPermission();
-                route = savedInstanceState.getParcelableArrayList(getResources().getString(R.string.routes_string));
-
-                if(route.isEmpty() != true){
-                    Toast.makeText(this, "Route Start", Toast.LENGTH_SHORT).show();
-
-                    for(int i = 0; i < route.size(); i++){
-                        Location tempLoc = route.get(i);
-                        makeMarker(tempLoc);
-                    }
-
-                }
-
-            }
-
-        }
     }
 
     @Override
@@ -340,5 +269,6 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     public Status getStatus() {
         return null;
     }
+
     //End Main
 }
