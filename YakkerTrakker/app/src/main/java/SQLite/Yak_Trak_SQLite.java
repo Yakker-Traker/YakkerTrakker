@@ -14,11 +14,8 @@ import java.util.List;
  */
 
 public class Yak_Trak_SQLite extends SQLiteOpenHelper {
-<<<<<<< HEAD
-    private static final int DATABASE_VERSION = 1;
-=======
+
     private static final int DATABASE_VERSION = 34;
->>>>>>> b1529b412607f8a28af4eb918f779de8a554f713
 
     private static final String DATABASE_NAME = "Yakker_Trakker_DB";
 
@@ -56,17 +53,8 @@ public class Yak_Trak_SQLite extends SQLiteOpenHelper {
         this.onCreate(ytDatabase);
     }
 
-<<<<<<< HEAD
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-    }
-
     private  static final String ROUTES_TABLE = "routes";
-=======
 
-    private static final String ROUTES_TABLE = "routes";
->>>>>>> b1529b412607f8a28af4eb918f779de8a554f713
     private static final String KEY_ROUTE_NAME = "route_name";
     private static final String KEY_DATE_CREATED = "date_created";
     private static final String KEY_COMMENTS = "comments";
