@@ -13,7 +13,7 @@ import java.util.List;
  * Created by dell on 4/6/2017.
  */
 
-public abstract class Yak_Trak_SQLite extends SQLiteOpenHelper {
+public class Yak_Trak_SQLite extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     private static final String DATABASE_NAME = "Yakker_Trakker_DB";
@@ -41,6 +41,11 @@ public abstract class Yak_Trak_SQLite extends SQLiteOpenHelper {
                 "route_name VARCHAR (256));";
         ytDatabase.execSQL(CREATE_COORDINATES_TABLE);
 
+
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
     }
 

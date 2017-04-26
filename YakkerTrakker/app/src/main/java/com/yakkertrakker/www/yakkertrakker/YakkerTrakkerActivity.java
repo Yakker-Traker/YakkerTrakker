@@ -2,6 +2,7 @@ package com.yakkertrakker.www.yakkertrakker;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -11,10 +12,15 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -27,8 +33,14 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.util.ArrayList;
 
-public class YakkerTrakkerActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+import SQLite.Routes;
+import SQLite.Coordinates;
+import SQLite.Yak_Trak_SQLite;
+
+
+public class YakkerTrakkerActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, com.google.android.gms.common.api.Result {
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -37,6 +49,11 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     LocationRequest mLocationRequest;
     ToggleButton startStop;
     Boolean routeStarted;
+    ArrayList<Location> route = new ArrayList<Location>();
+    Routes curRoute = new Routes("TestRoute", "4-25-17", "");
+    //Yak_Trak_SQLite localDB;
+
+    Yak_Trak_SQLite localDB = new Yak_Trak_SQLite(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +61,15 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         setContentView(R.layout.activity_yakker_trakker);
         routeStarted = false;
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        //If we saved something, reinitialize it.
+
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -96,6 +115,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             mMap.setMyLocationEnabled(true);
         }
 
+
         startStop = (ToggleButton)findViewById(R.id.start_stop);
         startStop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -104,11 +124,10 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                     //If button is pressed, place marker at last known location so long as it is not null
                     if(mLastLocation != null){
                         //Push location to database here
-                        MarkerOptions newMarker = new MarkerOptions();
-                        newMarker.position(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()));
-                        newMarker.title("Start");
-                        newMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                        currLocationMarker = mMap.addMarker(newMarker);
+                        route.add(mLastLocation);
+                        //Location LatLng pushed to ArrayList object
+                        makeMarker(mLastLocation);
+                        //markers.add(newMarker);
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
                         mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
                     }
@@ -117,16 +136,13 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 else{
                     if(mLastLocation != null){
                         //Push location to database here
-                        MarkerOptions newMarker = new MarkerOptions();
-                        newMarker.position(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()));
-                        newMarker.title("End");
-                        newMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                        currLocationMarker = mMap.addMarker(newMarker);
+                        route.add(mLastLocation);
+                        //Location LatLng pushed to ArrayList object
+                        mMap.clear();
+                        //markers.add(newMarker);
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
-                        mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
-
                     }
-                    routeStarted = true;
+                    routeStarted = false;
                 }
             }
         });
@@ -142,24 +158,25 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     }
 
     protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
-        mGoogleApiClient.connect();
+        if(mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
+            mGoogleApiClient.connect();
+
+        }
     }
 
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
+    public void onConnected(@Nullable Bundle savedInstanceState) {
 
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(10000);
         mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        }
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
@@ -173,37 +190,96 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        //Ask for permissions here
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        if(routeStarted == true) {
-            mLastLocation = location;
-            if (currLocationMarker != null) {
-                //currLocationMarker.remove();
-            }
+        mLastLocation = location;
+        if(routeStarted == true && mLastLocation != null) {
 
-            double newLat = location.getLatitude();
-            double newLong = location.getLongitude();
-            String newLatStr = Double.toString(newLat);
-            String newLongStr = Double.toString(newLong);
-            String titleStr = new StringBuilder().append(newLatStr).append(" + ").append(newLongStr).toString();
+            route.add(mLastLocation);
+            makeMarker(mLastLocation);
 
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            markerOptions.title(titleStr);
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-            currLocationMarker = mMap.addMarker(markerOptions);
+            //route.add(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+            //currLocationMarker = mMap.addMarker(markerOptions);
 
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
-
-            if (mGoogleApiClient != null) {
-                //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-            }
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putParcelableArrayList(getResources().getString(R.string.routes_string), route);
+        if(routeStarted == true) {
+            savedInstanceState.putBoolean(getResources().getString(R.string.started_string), routeStarted);
+        }
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+        if(savedInstanceState != null){
+
+            if(savedInstanceState.containsKey(getResources().getString(R.string.started_string))){
+                Toast.makeText(this, "routeStarted Save", Toast.LENGTH_SHORT).show();
+                routeStarted = savedInstanceState.getParcelable(getResources().getString(R.string.started_string));
+            }
+
+            if(savedInstanceState.containsKey(getResources().getString(R.string.routes_string))){
+                checkLocationPermission();
+                route = savedInstanceState.getParcelableArrayList(getResources().getString(R.string.routes_string));
+
+                if(route.isEmpty() != true){
+                    Toast.makeText(this, "Route Start", Toast.LENGTH_SHORT).show();
+
+                    for(int i = 0; i < route.size(); i++){
+                        Location tempLoc = route.get(i);
+                        makeMarker(tempLoc);
+                    }
+
+                }
+
+            }
+
+        }
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        //Toast.makeText(this, "onResume Called", Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        //Toast.makeText(this, "Goodbye", Toast.LENGTH_SHORT).show();
+
+    }
+
+    public void makeMarker(Location current){
+
+        double newLat = current.getLatitude();
+        double newLong = current.getLongitude();
+        String newLatStr = Double.toString(newLat);
+        String newLongStr = Double.toString(newLong);
+        String titleStr = new StringBuilder().append(newLatStr).append(", ").append(newLongStr).toString();
+        LatLng latLng = new LatLng(current.getLatitude(), current.getLongitude());
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        markerOptions.title(titleStr);
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+        if(mMap != null) {
+            currLocationMarker = mMap.addMarker(markerOptions);
+        }
+    }
+
+    @Override
+    public Status getStatus() {
+        return null;
     }
     //End Main
 }
