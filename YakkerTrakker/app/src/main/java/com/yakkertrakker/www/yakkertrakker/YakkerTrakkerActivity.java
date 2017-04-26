@@ -63,8 +63,8 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     ArrayList<Location> myRoute = new ArrayList<Location>();
     Bundle myBundle;
 
-    //Routes curRoute = new Routes("TestRoute", "4-25-17", "");
-    //Yak_Trak_SQLite localDB = new Yak_Trak_SQLite(this);
+    Routes curRoute = new Routes("TestRoute", "4-25-17", "");
+    Yak_Trak_SQLite localDB = new Yak_Trak_SQLite(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

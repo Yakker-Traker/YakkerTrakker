@@ -1,14 +1,9 @@
 <resources>
     <string name="app_name">Yakker Trakker</string>
     <string name="title_activity_yakker_trakker">Trakker</string>
-<<<<<<< HEAD
+
     <string name="key_route">ROUTE</string>
     <string name="key_routeStarted">ROUTE_STARTED</string>
-=======
-    <string name="routes_string">route</string>
-    <string name="markers_string">markers</string>
-    <string name="started_string">routeStarted</string>
-
 
     <string name="main_button">=</string>
     <string name="Start_Text">Start Route</string>
