@@ -27,6 +27,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.util.ArrayList;
+
 
 public class YakkerTrakkerActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
@@ -37,6 +39,8 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     LocationRequest mLocationRequest;
     ToggleButton startStop;
     Boolean routeStarted;
+    ArrayList<Location> myRoute = new ArrayList<Location>();
+    Bundle myBundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,11 +108,8 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                     //If button is pressed, place marker at last known location so long as it is not null
                     if(mLastLocation != null){
                         //Push location to database here
-                        MarkerOptions newMarker = new MarkerOptions();
-                        newMarker.position(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()));
-                        newMarker.title("Start");
-                        newMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                        currLocationMarker = mMap.addMarker(newMarker);
+                        myRoute.add(mLastLocation);
+                        makeMarker(mLastLocation);
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
                         mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
                     }
@@ -117,20 +118,30 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 else{
                     if(mLastLocation != null){
                         //Push location to database here
-                        MarkerOptions newMarker = new MarkerOptions();
-                        newMarker.position(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()));
-                        newMarker.title("End");
-                        newMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                        currLocationMarker = mMap.addMarker(newMarker);
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
-                        mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
+                        myRoute.add(mLastLocation);
+                        mMap.clear();
 
                     }
-                    routeStarted = true;
+                    routeStarted = false;
                 }
             }
         });
 
+        if(myBundle != null){
+            if(myBundle.containsKey(getResources().getString(R.string.key_route))){
+                myRoute = myBundle.getParcelableArrayList(getResources().getString(R.string.key_route));
+                if(myRoute.isEmpty() == false){
+                    for(int i = 0; i < myRoute.size(); i++){
+                        Location temp = myRoute.get(i);
+                        makeMarker(temp);
+                    }
+
+                }
+            }
+            if(myBundle.containsKey(getResources().getString(R.string.key_routeStarted))){
+                routeStarted = myBundle.getBoolean(getResources().getString(R.string.key_routeStarted));
+            }
+        }
         /*
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
@@ -157,9 +168,6 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        }
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
@@ -178,32 +186,42 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
 
     @Override
     public void onLocationChanged(Location location) {
+        mLastLocation = location;
         if(routeStarted == true) {
-            mLastLocation = location;
-            if (currLocationMarker != null) {
-                //currLocationMarker.remove();
-            }
-
-            double newLat = location.getLatitude();
-            double newLong = location.getLongitude();
-            String newLatStr = Double.toString(newLat);
-            String newLongStr = Double.toString(newLong);
-            String titleStr = new StringBuilder().append(newLatStr).append(" + ").append(newLongStr).toString();
-
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            markerOptions.title(titleStr);
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-            currLocationMarker = mMap.addMarker(markerOptions);
-
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
-
-            if (mGoogleApiClient != null) {
-                //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-            }
+            myRoute.add(location);
+            makeMarker(mLastLocation);
         }
+    }
+
+    public void makeMarker(Location location){
+
+        double newLat = location.getLatitude();
+        double newLong = location.getLongitude();
+        String newLatStr = Double.toString(newLat);
+        String newLongStr = Double.toString(newLong);
+        String titleStr = new StringBuilder().append(newLatStr).append(" + ").append(newLongStr).toString();
+
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        markerOptions.title(titleStr);
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+        currLocationMarker = mMap.addMarker(markerOptions);
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putParcelableArrayList(getResources().getString(R.string.key_route),myRoute);
+        savedInstanceState.putBoolean(getResources().getString(R.string.key_routeStarted), routeStarted);
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+        myBundle = savedInstanceState;
     }
     //End Main
 }
