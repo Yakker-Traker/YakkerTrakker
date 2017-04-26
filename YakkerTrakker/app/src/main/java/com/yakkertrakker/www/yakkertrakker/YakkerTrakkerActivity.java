@@ -62,7 +62,6 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     Boolean routeStarted;
     ArrayList<Location> route = new ArrayList<Location>();
     Routes curRoute = new Routes("TestRoute", "4-25-17", "");
-    //Yak_Trak_SQLite localDB;
 
     Yak_Trak_SQLite localDB = new Yak_Trak_SQLite(this);
 
