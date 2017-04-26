@@ -1,7 +1,19 @@
 package com.yakkertrakker.www.yakkertrakker;
 
+
+import java.util.List;
+
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+//import android.support.v4.widget.SearchViewCompatIcs;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -11,10 +23,15 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -29,8 +46,12 @@ import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 
+import SQLite.Routes;
+import SQLite.Coordinates;
+import SQLite.Yak_Trak_SQLite;
 
-public class YakkerTrakkerActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+
+public class YakkerTrakkerActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, com.google.android.gms.common.api.Result {
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -42,19 +63,24 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     ArrayList<Location> myRoute = new ArrayList<Location>();
     Bundle myBundle;
 
+    //Routes curRoute = new Routes("TestRoute", "4-25-17", "");
+    //Yak_Trak_SQLite localDB = new Yak_Trak_SQLite(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_yakker_trakker);
         routeStarted = false;
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -100,6 +126,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             mMap.setMyLocationEnabled(true);
         }
 
+
         startStop = (ToggleButton)findViewById(R.id.start_stop);
         startStop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -109,7 +136,9 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                     if(mLastLocation != null){
                         //Push location to database here
                         myRoute.add(mLastLocation);
+                        //Location LatLng pushed to ArrayList object
                         makeMarker(mLastLocation);
+                        //markers.add(newMarker);
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
                         mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
                     }
@@ -119,8 +148,10 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                     if(mLastLocation != null){
                         //Push location to database here
                         myRoute.add(mLastLocation);
+                        //Location LatLng pushed to ArrayList object
                         mMap.clear();
-
+                        //markers.add(newMarker);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
                     }
                     routeStarted = false;
                 }
@@ -153,17 +184,21 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     }
 
     protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
-        mGoogleApiClient.connect();
+        if(mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
+            mGoogleApiClient.connect();
+
+        }
     }
 
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
+    public void onConnected(@Nullable Bundle savedInstanceState) {
 
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(10000);
         mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
@@ -181,47 +216,64 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        //Ask for permissions here
     }
 
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
-        if(routeStarted == true) {
+        if (routeStarted == true) {
             myRoute.add(location);
             makeMarker(mLastLocation);
         }
     }
 
-    public void makeMarker(Location location){
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putParcelableArrayList(getResources().getString(R.string.key_route), myRoute);
+        savedInstanceState.putBoolean(getResources().getString(R.string.key_routeStarted), routeStarted);
+    }
+    protected void onResume(){
+        super.onResume();
+        //Toast.makeText(this, "onResume Called", Toast.LENGTH_SHORT).show();
 
-        double newLat = location.getLatitude();
-        double newLong = location.getLongitude();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        myBundle = savedInstanceState;
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        //Toast.makeText(this, "Goodbye", Toast.LENGTH_SHORT).show();
+
+    }
+
+    public void makeMarker(Location current){
+
+        double newLat = current.getLatitude();
+        double newLong = current.getLongitude();
         String newLatStr = Double.toString(newLat);
         String newLongStr = Double.toString(newLong);
-        String titleStr = new StringBuilder().append(newLatStr).append(" + ").append(newLongStr).toString();
-
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        String titleStr = new StringBuilder().append(newLatStr).append(", ").append(newLongStr).toString();
+        LatLng latLng = new LatLng(current.getLatitude(), current.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title(titleStr);
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-        currLocationMarker = mMap.addMarker(markerOptions);
-
+        if(mMap != null) {
+            currLocationMarker = mMap.addMarker(markerOptions);
+        }
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle savedInstanceState){
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putParcelableArrayList(getResources().getString(R.string.key_route),myRoute);
-        savedInstanceState.putBoolean(getResources().getString(R.string.key_routeStarted), routeStarted);
-
+    public Status getStatus() {
+        return null;
     }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState){
-        super.onRestoreInstanceState(savedInstanceState);
-        myBundle = savedInstanceState;
-    }
     //End Main
 }
