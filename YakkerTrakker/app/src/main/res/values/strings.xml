@@ -4,10 +4,23 @@
 
     <string name="key_route">ROUTE</string>
     <string name="key_routeStarted">ROUTE_STARTED</string>
+    <string name="key_defaultRoute">Route</string>
+    <string name="key_defaultDate">N/A</string>
+    <string name="key_defaultComment">N/A</string>
 
     <string name="main_button">=</string>
     <string name="Start_Text">Start Route</string>
     <string name="Stop_Text">Stop Route</string>
+
+    <string name="key_meters"> m.</string>
+    <string name="key_kilometers"> Km.</string>
+    <string name="key_feet"> ft.</string>
+    <string name="key_yards"> yd.</string>
+    <string name="key_sec"> s.</string>
+    <string name="key_min"> min.</string>
+    <string name="key_hour"> hr.</string>
+    <string name="key_cancel">Cancel</string>
+    <string name="key_addRoute">Add Route</string>
 
     <string name="db_Button_Name">Start DataBase Test</string>
     <string name="Add_Route_Button">Add Route</string>
@@ -18,5 +31,5 @@
     <string name="Enter_Comments">Enter Comments</string>
     <string name="Delete_Routes">Delete Route From the Database</string>
     <string name="Data_Message">Data Base Query Complete</string>
->>>>>>> master
+
 </resources>

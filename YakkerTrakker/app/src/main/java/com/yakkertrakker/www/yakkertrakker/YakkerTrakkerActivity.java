@@ -3,6 +3,8 @@ package com.yakkertrakker.www.yakkertrakker;
 
 import java.util.List;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -23,6 +25,8 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -45,26 +49,34 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import SQLite.Routes;
 import SQLite.Coordinates;
 import SQLite.Yak_Trak_SQLite;
 
 
+import static com.yakkertrakker.www.yakkertrakker.R.id.details_window;
+
+
 public class YakkerTrakkerActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, com.google.android.gms.common.api.Result {
 
     private GoogleMap mMap;
-    GoogleApiClient mGoogleApiClient;
-    Location mLastLocation;
-    Marker currLocationMarker;
-    LocationRequest mLocationRequest;
-    ToggleButton startStop;
-    Boolean routeStarted;
-    ArrayList<Location> myRoute = new ArrayList<Location>();
-    Bundle myBundle;
+    private GoogleApiClient mGoogleApiClient;
+    private Location mLastLocation;
+    private Marker currLocationMarker;
+    private LocationRequest mLocationRequest;
+    private ToggleButton startStop;
+    private Boolean routeStarted;
+    private ArrayList<Location> myRoute = new ArrayList<Location>();
+    private Bundle myBundle;
+    private float myDistance;
+    private Calendar myCalendar;
+    private int startHour;
+    private int startMin;
+    private int startSec;
 
-    Routes curRoute = new Routes("TestRoute", "4-25-17", "");
-    Yak_Trak_SQLite localDB = new Yak_Trak_SQLite(this);
+    Yak_Trak_SQLite localDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +84,13 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_yakker_trakker);
         routeStarted = false;
+        localDB = new Yak_Trak_SQLite(this);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+        builder.setMessage("Test");
+        AlertDialog dialog = builder.create();
+        //dialog.show();
+
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
@@ -134,11 +153,8 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 if(isChecked == true){
                     //If button is pressed, place marker at last known location so long as it is not null
                     if(mLastLocation != null){
-                        //Push location to database here
                         myRoute.add(mLastLocation);
-                        //Location LatLng pushed to ArrayList object
                         makeMarker(mLastLocation);
-                        //markers.add(newMarker);
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
                         mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
                     }
@@ -146,17 +162,33 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 }
                 else{
                     if(mLastLocation != null){
-                        //Push location to database here
                         myRoute.add(mLastLocation);
-                        //Location LatLng pushed to ArrayList object
                         mMap.clear();
-                        //markers.add(newMarker);
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
                     }
+                    //routeFinished();
                     routeStarted = false;
                 }
             }
         });
+
+        if(myBundle == null) {
+            myCalendar = Calendar.getInstance();
+            startSec = myCalendar.get(Calendar.SECOND);
+            startMin = myCalendar.get(Calendar.MINUTE);
+            startHour = myCalendar.get(Calendar.HOUR_OF_DAY);
+        }
+        else{
+            if(myBundle.containsKey(getResources().getString(R.string.key_hour))){
+                startHour = myBundle.getInt(getResources().getString(R.string.key_hour));
+            }
+            if(myBundle.containsKey(getResources().getString(R.string.key_min))){
+                startMin = myBundle.getInt(getResources().getString(R.string.key_min));
+            }
+            if(myBundle.containsKey(getResources().getString(R.string.key_sec))){
+                startSec = myBundle.getInt(getResources().getString(R.string.key_sec));
+            }
+        }
 
         if(myBundle != null){
             if(myBundle.containsKey(getResources().getString(R.string.key_route))){
@@ -225,6 +257,9 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         if (routeStarted == true) {
             myRoute.add(location);
             makeMarker(mLastLocation);
+            setDistance();
+            setTime();
+            setSpeed();
         }
     }
 
@@ -233,10 +268,13 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putParcelableArrayList(getResources().getString(R.string.key_route), myRoute);
         savedInstanceState.putBoolean(getResources().getString(R.string.key_routeStarted), routeStarted);
+        savedInstanceState.putInt(getResources().getString(R.string.key_hour), startHour);
+        savedInstanceState.putInt(getResources().getString(R.string.key_min), startMin);
+        savedInstanceState.putInt(getResources().getString(R.string.key_sec), startSec);
+
     }
     protected void onResume(){
         super.onResume();
-        //Toast.makeText(this, "onResume Called", Toast.LENGTH_SHORT).show();
 
     }
 
@@ -249,7 +287,6 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     @Override
     protected void onPause(){
         super.onPause();
-        //Toast.makeText(this, "Goodbye", Toast.LENGTH_SHORT).show();
 
     }
 
@@ -275,5 +312,136 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         return null;
     }
 
+    public void routeFinished(){
+        //Details set to defaults
+        String routeName = getResources().getString(R.string.key_defaultRoute);
+        String routeDate = getResources().getString(R.string.key_defaultDate);
+        String routeComment = getResources().getString(R.string.key_defaultComment);
+
+        //Pop dialogue to get Route Name and comments here
+        Dialog nameDialog = new Dialog(this);
+        nameDialog.show();
+
+        Coordinates curCoord;
+        Routes curRoute = new Routes(routeName, routeDate, routeComment);
+        localDB.addRouteIntoDataBase(curRoute);
+        for(int i = 0; i < myRoute.size(); i++){
+            Location temp = myRoute.get(i);
+            curCoord = new Coordinates(temp.getLatitude(), temp.getLongitude(), routeName);
+            localDB.addCoordinateIntoDataBase(curCoord);
+        }
+        myRoute.clear();
+        return;
+    }
+
+    public void setDistance(){
+        myDistance = 0;
+        Location temp1, temp2;
+        TextView distanceText = (TextView) findViewById(R.id.details_window);
+        if(myRoute.size() > 1) {
+            for (int i = 1; i < myRoute.size(); i++) {
+                temp1 = myRoute.get(i - 1);
+                temp2 = myRoute.get(i);
+                myDistance = myDistance + temp1.distanceTo(temp2);
+            }
+        }
+        int tempDistance = (int) myDistance;
+        String distanceString = Integer.toString(tempDistance);
+        distanceString = new StringBuilder().append(distanceString).append(getResources().getString(R.string.key_meters)).toString();
+        distanceText.setText(distanceString);
+        return;
+    }
+
+    public void setTime(){
+        myCalendar = Calendar.getInstance();
+        int curSec = myCalendar.get(Calendar.SECOND);
+        int curMin = myCalendar.get(Calendar.MINUTE);
+        int curHour = myCalendar.get(Calendar.HOUR_OF_DAY);
+        TextView timeText = (TextView)findViewById(R.id.time_window);
+
+        curSec = curSec - startSec;
+        curMin = curMin - startMin;
+        curHour = curHour - startHour;
+
+        String timeString = new StringBuilder().append("Error").toString();
+
+        if(curHour > 0 && curMin > 0 && curSec > 0){
+            String hourString = Integer.toString(curHour);
+            String minString = Integer.toString(curMin);
+            String secString = Integer.toString(curSec);
+
+            timeString = new StringBuilder().append(hourString).append(getResources().getString(R.string.key_hour)).append(" ").append(minString).append(getResources().getString(R.string.key_min)).append(" ").append(secString).append(getResources().getString(R.string.key_sec)).toString();
+
+        }
+
+        if(curHour > 0 && curMin > 0 && curSec <= 0){
+            String hourString = Integer.toString(curHour);
+            String minString = Integer.toString(curMin);
+            timeString = new StringBuilder().append(hourString).append(getResources().getString(R.string.key_hour)).append(" ").append(minString).append(getResources().getString(R.string.key_min)).toString();
+        }
+
+        if(curHour > 0 && curMin <= 0 && curSec <= 0){
+            String hourString = Integer.toString(curHour);
+            timeString = new StringBuilder().append(hourString).append(getResources().getString(R.string.key_hour)).toString();
+        }
+
+        if(curHour <= 0 && curMin > 0 && curSec > 0){
+            String minString = Integer.toString(curMin);
+            String secString = Integer.toString(curSec);
+            timeString = new StringBuilder().append(minString).append(getResources().getString(R.string.key_min)).append(" ").append(secString).append(getResources().getString(R.string.key_sec)).toString();
+
+        }
+
+        if(curHour <= 0 && curMin > 0 && curSec <= 0){
+            String minString = Integer.toString(curMin);
+            timeString = new StringBuilder().append(minString).append(getResources().getString(R.string.key_min)).toString();
+        }
+
+        if(curHour <= 0 && curMin <= 0 && curSec > 0){
+            String secString = Integer.toString(curSec);
+            timeString = new StringBuilder().append(secString).append(getResources().getString(R.string.key_sec)).toString();
+        }
+
+        timeText.setText(timeString);
+        return;
+
+    }
+
+    public void setSpeed(){
+        int curSec = myCalendar.get(Calendar.SECOND);
+        int curMin = myCalendar.get(Calendar.MINUTE);
+        int curHour = myCalendar.get(Calendar.HOUR_OF_DAY);
+        TextView speedText = (TextView)findViewById(R.id.speed_window);
+
+        curSec = curSec - startSec;
+        curMin = curMin - startMin;
+        curHour = curHour - startHour;
+
+        if(curHour <= 0){
+            curHour = 0;
+        }
+        if(curMin <= 0){
+            curHour = 0;
+        }
+        curMin = curMin*60;
+        curHour = curHour*3600;
+        int time = curSec + curMin + curHour;
+
+        double localDist = 0;
+        Location temp1, temp2;
+        if(myRoute.size() > 1) {
+            for (int i = 1; i < myRoute.size(); i++) {
+                temp1 = myRoute.get(i - 1);
+                temp2 = myRoute.get(i);
+                localDist = localDist + temp1.distanceTo(temp2);
+            }
+        }
+        int speed = (int) (localDist/time);
+        String speedString = Integer.toString(speed);
+        String speedSet = new StringBuilder().append(speedString).append(" m/s").toString();
+        speedText.setText(speedSet);
+        return;
+    }
     //End Main
 }
+//This is my branch copy.

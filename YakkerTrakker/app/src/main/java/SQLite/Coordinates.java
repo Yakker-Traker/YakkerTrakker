@@ -5,8 +5,8 @@ package SQLite;
  */
 
 public class Coordinates {
-    private float latitude;
-    private float longitude;
+    private double latitude;
+    private double longitude;
     private String route_name;
 
     // Used for the database
@@ -14,18 +14,18 @@ public class Coordinates {
 
     public Coordinates (){}
 
-    public Coordinates (float latitude, float longitude, String route_name){
+    public Coordinates (double latitude, double longitude, String route_name){
         this.latitude = latitude;
         this.longitude = longitude;
         this.route_name = route_name;
         this.id = 0;
     }
 
-    public float getLatitude(){
+    public double getLatitude(){
         return latitude;
     }
 
-    public float getLongitude(){
+    public double getLongitude(){
         return longitude;
     }
 

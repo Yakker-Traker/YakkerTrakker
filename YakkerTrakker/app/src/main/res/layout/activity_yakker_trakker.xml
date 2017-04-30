@@ -11,13 +11,40 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.yakkertrakker.www.myapplication.MapsActivity" />
-
-    <ToggleButton
-        android:id="@+id/start_stop"
-        android:textOn="Stop"
-        android:textOff="Start"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"/>
+        android:layout_gravity="right">
+
+        <TextView
+            android:id="@+id/details_window"
+            android:textColor="#ffffff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom" />
+        <TextView
+            android:id="@+id/time_window"
+            android:textColor="#ffffff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"/>
+        <TextView
+            android:id="@+id/speed_window"
+            android:textColor="#ffffff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"/>
+        <ToggleButton
+            android:id="@+id/start_stop"
+            android:button="@drawable/toggle_button_images"
+            android:background="@null"
+            android:textOff=""
+            android:textOn=""
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="bottom"/>
+
+    </LinearLayout>
+
 
 </FrameLayout>
