@@ -9,10 +9,13 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -66,7 +69,7 @@ import SQLite.Yak_Trak_SQLite;
 import static com.yakkertrakker.www.yakkertrakker.R.id.details_window;
 
 
-public class YakkerTrakkerActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, com.google.android.gms.common.api.Result {
+public class YakkerTrakkerActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, com.google.android.gms.common.api.Result, NavigationView.OnNavigationItemSelectedListener {
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
@@ -113,6 +116,8 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         };
         mDrawerToggle.syncState();
 
+        NavigationView navigationView = (NavigationView)findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
@@ -470,6 +475,39 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         String speedSet = new StringBuilder().append(speedString).append(" m/s").toString();
         speedText.setText(speedSet);
         return;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.activity_yakker_trakker_drawer, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id = item.getItemId();
+        if(id == R.id.settings){
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if(id == R.id.save_route){
+            Toast.makeText(getApplicationContext(), "Save Route", Toast.LENGTH_SHORT);
+        } else if (id == R.id.weather){
+            Toast.makeText(getApplicationContext(), "Weather", Toast.LENGTH_SHORT);
+        } else if (id == R.id.tides){
+            Toast.makeText(getApplicationContext(), "Tides", Toast.LENGTH_SHORT);
+        } else if (id == R.id.settings){
+            Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_SHORT);
+        }
+
+        mDrawer.closeDrawer(GravityCompat.START);
+        return true;
     }
     //End Main
 }
