@@ -21,6 +21,8 @@
     <string name="key_hour"> hr.</string>
     <string name="key_cancel">Cancel</string>
     <string name="key_addRoute">Add Route</string>
+    <string name="key_drawerOpen">Open</string>
+    <string name="key_drawerClose">Close</string>
 
     <string name="db_Button_Name">Start DataBase Test</string>
     <string name="Add_Route_Button">Add Route</string>

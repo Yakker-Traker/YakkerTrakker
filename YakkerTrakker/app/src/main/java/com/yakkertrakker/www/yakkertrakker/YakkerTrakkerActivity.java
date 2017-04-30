@@ -9,7 +9,13 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.ListViewAutoScrollHelper;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 //import android.support.v4.widget.SearchViewCompatIcs;
 
@@ -26,6 +32,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -75,6 +82,9 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     private int startHour;
     private int startMin;
     private int startSec;
+    private DrawerLayout mDrawer;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private ListView mDrawerList;
 
     Yak_Trak_SQLite localDB;
 
@@ -85,11 +95,23 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         setContentView(R.layout.activity_yakker_trakker);
         routeStarted = false;
         localDB = new Yak_Trak_SQLite(this);
+        final String title = "Trakker";
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-        builder.setMessage("Test");
-        AlertDialog dialog = builder.create();
-        //dialog.show();
+        mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, R.string.key_drawerOpen, R.string.key_drawerClose){
+
+            public void onDrawerClosed(View view){
+                super.onDrawerClosed(view);
+                getActionBar().setTitle(title);
+                invalidateOptionsMenu();
+            }
+            public void onDrawerOpened(View view){
+                super.onDrawerOpened(view);
+                getActionBar().setTitle(title);
+                invalidateOptionsMenu();
+            }
+        };
+        mDrawerToggle.syncState();
 
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -100,6 +122,13 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu){
+        boolean drawerOpen = mDrawer.isDrawerOpen(mDrawerList);
+        menu.findItem(R.id.start_stop).setVisible(!drawerOpen);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
