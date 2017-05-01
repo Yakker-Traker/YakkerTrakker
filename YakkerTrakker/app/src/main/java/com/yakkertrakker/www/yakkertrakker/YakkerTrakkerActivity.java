@@ -6,10 +6,12 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.ListViewAutoScrollHelper;
@@ -57,6 +59,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import android.support.v7.widget.Toolbar;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -88,6 +91,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     private DrawerLayout mDrawer;
     private ActionBarDrawerToggle mDrawerToggle;
     private ListView mDrawerList;
+    Button clear;
 
     Yak_Trak_SQLite localDB;
 
@@ -100,8 +104,17 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         localDB = new Yak_Trak_SQLite(this);
         final String title = "Trakker";
 
+
         mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, R.string.key_drawerOpen, R.string.key_drawerClose){
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                mDrawer,
+                R.string.key_drawerOpen,
+                R.string.key_drawerClose){
+
+
+
+
 
             public void onDrawerClosed(View view){
                 super.onDrawerClosed(view);
@@ -113,7 +126,9 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 getActionBar().setTitle(title);
                 invalidateOptionsMenu();
             }
+
         };
+
         mDrawerToggle.syncState();
 
         NavigationView navigationView = (NavigationView)findViewById(R.id.nav_view);
@@ -127,7 +142,39 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
+
+
+
+
+
+        // Button added to clear Fragments can be deleted later after figureing
+        // out how to control the back button.
+        clear = (Button) findViewById(R.id.clearButton);
+        clear.setVisibility(View.GONE);
+        clear.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                clear.setVisibility(View.GONE);
+
+
+                final android.support.v4.app.Fragment fragment = new Fragment();
+                android.support.v4.app.FragmentTransaction fragmentTransaction =
+                        getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.content_frame, fragment);
+                fragmentTransaction.commit();
+            }
+        });
+
+
+
+
+
+
+
+
+
     }
+
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu){
@@ -497,17 +544,30 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         int id = item.getItemId();
 
         if(id == R.id.save_route){
-            Toast.makeText(getApplicationContext(), "Save Route", Toast.LENGTH_SHORT);
+            Toast.makeText(getApplicationContext(), "Save Route", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.weather){
-            Toast.makeText(getApplicationContext(), "Weather", Toast.LENGTH_SHORT);
+            weatherFragment fragment = new weatherFragment();
+            android.support.v4.app.FragmentTransaction fragmentTransaction =
+                    getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.content_frame, fragment);
+            fragmentTransaction.commit();
+
+            clear.setVisibility(View.VISIBLE);
+
+
+
         } else if (id == R.id.tides){
-            Toast.makeText(getApplicationContext(), "Tides", Toast.LENGTH_SHORT);
+            Toast.makeText(getApplicationContext(), "Tides", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.settings){
-            Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_SHORT);
+            Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_SHORT).show();
         }
 
         mDrawer.closeDrawer(GravityCompat.START);
         return true;
     }
     //End Main
+
+
+
+
 }
