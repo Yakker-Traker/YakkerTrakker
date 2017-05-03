@@ -104,7 +104,6 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         localDB = new Yak_Trak_SQLite(this);
         final String title = "Trakker";
 
-
         mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,
@@ -152,8 +151,6 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         clear.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 clear.setVisibility(View.GONE);
-
-
                 final android.support.v4.app.Fragment fragment = new Fragment();
                 android.support.v4.app.FragmentTransaction fragmentTransaction =
                         getSupportFragmentManager().beginTransaction();
@@ -161,12 +158,6 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 fragmentTransaction.commit();
             }
         });
-
-
-
-
-
-
 
 
 
@@ -541,7 +532,13 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         int id = item.getItemId();
 
         if(id == R.id.save_route){
-            Toast.makeText(getApplicationContext(), "Save Route", Toast.LENGTH_SHORT).show();
+            savedRoutesFragment fragment = new savedRoutesFragment();
+            android.support.v4.app.FragmentTransaction fragmentTransaction =
+                    getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.content_frame, fragment);
+            fragmentTransaction.commit();
+
+            clear.setVisibility(View.VISIBLE);
         } else if (id == R.id.weather){
             weatherFragment fragment = new weatherFragment();
             android.support.v4.app.FragmentTransaction fragmentTransaction =
@@ -556,12 +553,15 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         } else if (id == R.id.tides){
             Toast.makeText(getApplicationContext(), "Tides", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.settings){
-            Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_SHORT).show();
-            settingsFragment sfragment = new settingsFragment();
+            settingsFragment fragment = new settingsFragment();
             android.support.v4.app.FragmentTransaction fragmentTransaction =
                     getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.content_frame, sfragment);
+            fragmentTransaction.replace(R.id.content_frame, fragment);
             fragmentTransaction.commit();
+
+            clear.setVisibility(View.VISIBLE);
+
+
         }
 
         mDrawer.closeDrawer(GravityCompat.START);
