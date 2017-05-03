@@ -3,8 +3,8 @@
     android:id="@+id/weatherFrag"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/weather_background"
-    tools:context="com.yakkertrakker.www.yakkertrakker.Fragments.weatherFragment">
+    android:background="#234"
+    tools:context="com.yakkertrakker.www.yakkertrakker.weatherFragment">
 
     <TextView
         android:id="@+id/cityText"

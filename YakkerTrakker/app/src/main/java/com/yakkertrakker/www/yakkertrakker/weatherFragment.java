@@ -66,7 +66,7 @@ public class weatherFragment extends Fragment {
 
         //ChangeCity changeCity = new ChangeCity(YakerTrakerActivity.this);
         //renderWeatherData(changeCity.getCity());
-         renderWeatherData("Rohnert Park, US");
+         renderWeatherData("Fremont,US");
 
 
 

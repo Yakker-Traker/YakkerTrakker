@@ -69,7 +69,7 @@ import SQLite.Coordinates;
 import SQLite.Yak_Trak_SQLite;
 
 
-import static com.yakkertrakker.www.yakkertrakker.R.id.details_window;
+//import static com.yakkertrakker.www.yakkertrakker.R.id.details_window;
 
 
 public class YakkerTrakkerActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, com.google.android.gms.common.api.Result, NavigationView.OnNavigationItemSelectedListener {
@@ -111,9 +111,6 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 mDrawer,
                 R.string.key_drawerOpen,
                 R.string.key_drawerClose){
-
-
-
 
 
             public void onDrawerClosed(View view){
@@ -560,6 +557,11 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             Toast.makeText(getApplicationContext(), "Tides", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.settings){
             Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_SHORT).show();
+            settingsFragment sfragment = new settingsFragment();
+            android.support.v4.app.FragmentTransaction fragmentTransaction =
+                    getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.content_frame, sfragment);
+            fragmentTransaction.commit();
         }
 
         mDrawer.closeDrawer(GravityCompat.START);
@@ -568,6 +570,5 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     //End Main
 
 
-
-
 }
+//This is my branch.
