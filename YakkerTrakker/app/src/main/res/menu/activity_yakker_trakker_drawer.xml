@@ -6,9 +6,13 @@
         android:title="Save Route"
         android:icon="@drawable/ic_action_save"/>
     <item
+        android:id="@+id/routes_access"
+        android:title="Routes"
+        android:icon="@drawable/ic_action_place"/>
+    <item
         android:id="@+id/weather"
         android:title="Weather"
-        android:icon="@drawable/ic_action_about"/>
+        android:icon="@drawable/ic_action_cloud"/>
     <item
         android:id="@+id/tides"
         android:title="Tides"
@@ -17,6 +21,10 @@
         android:id="@+id/settings"
         android:title="Settings"
         android:icon="@drawable/ic_action_settings"/>
+    <item
+        android:id="@+id/open_map"
+        android:title="Back"
+        android:icon="@drawable/ic_action_map"/>
 
 
 </menu>

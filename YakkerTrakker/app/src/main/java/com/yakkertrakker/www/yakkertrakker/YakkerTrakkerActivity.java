@@ -93,6 +93,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     private DrawerLayout mDrawer;
     private ActionBarDrawerToggle mDrawerToggle;
     private ListView mDrawerList;
+    private ToggleButton openDrawer;
     Button clear;
 
     Yak_Trak_SQLite localDB;
@@ -147,28 +148,20 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        openDrawer = (ToggleButton) findViewById(R.id.drawer_button);
+        openDrawer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if(isChecked == true){
+                mDrawer.openDrawer(GravityCompat.START);
+            }
+            else{
 
-
-
-
-
-
+            }
+        }
+    });
         // Button added to clear Fragments can be deleted later after figureing
         // out how to control the back button.
-        clear = (Button) findViewById(R.id.clearButton);
-        clear.setVisibility(View.GONE);
-        clear.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                clear.setVisibility(View.GONE);
-                final android.support.v4.app.Fragment fragment = new Fragment();
-                android.support.v4.app.FragmentTransaction fragmentTransaction =
-                        getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.content_frame, fragment);
-                fragmentTransaction.commit();
-            }
-        });
-
-
 
     }
 
@@ -557,13 +550,8 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         int id = item.getItemId();
 
         if(id == R.id.save_route){
-            savedRoutesFragment fragment = new savedRoutesFragment();
-            android.support.v4.app.FragmentTransaction fragmentTransaction =
-                    getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.content_frame, fragment);
-            fragmentTransaction.commit();
             routeFinished();
-            clear.setVisibility(View.VISIBLE);
+
         } else if (id == R.id.weather){
             weatherFragment fragment = new weatherFragment();
             android.support.v4.app.FragmentTransaction fragmentTransaction =
@@ -571,12 +559,14 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             fragmentTransaction.replace(R.id.content_frame, fragment);
             fragmentTransaction.commit();
 
-            clear.setVisibility(View.VISIBLE);
-
-
-
         } else if (id == R.id.tides){
             Toast.makeText(getApplicationContext(), "Tides", Toast.LENGTH_SHORT).show();
+            tidesFragment fragment = new tidesFragment();
+            android.support.v4.app.FragmentTransaction fragmentTransaction =
+                    getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.content_frame, fragment);
+            fragmentTransaction.commit();
+
         } else if (id == R.id.settings){
             settingsFragment fragment = new settingsFragment();
             android.support.v4.app.FragmentTransaction fragmentTransaction =
@@ -584,10 +574,21 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             fragmentTransaction.replace(R.id.content_frame, fragment);
             fragmentTransaction.commit();
 
-            clear.setVisibility(View.VISIBLE);
+        } else if (id == R.id.routes_access){
+            savedRoutesFragment fragment = new savedRoutesFragment();
+            android.support.v4.app.FragmentTransaction fragmentTransaction =
+                    getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.content_frame, fragment);
+            fragmentTransaction.commit();
 
-
+        } else if (id == R.id.open_map){
+            final android.support.v4.app.Fragment fragment = new Fragment();
+            android.support.v4.app.FragmentTransaction fragmentTransaction =
+                    getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.content_frame, fragment);
+            fragmentTransaction.commit();
         }
+        openDrawer.setChecked(false);
         mDrawer.closeDrawer(GravityCompat.START);
         return true;
     }
