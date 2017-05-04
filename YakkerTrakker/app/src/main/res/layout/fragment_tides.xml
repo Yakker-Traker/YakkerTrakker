@@ -25,13 +25,9 @@
     android:background="#fff"
     tools:context="com.yakkertrakker.www.yakkertrakker.settingsFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <ListView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tides"
-        android:layout_centerInParent="true"
-        android:layout_centerHorizontal="true"
-        android:textAllCaps="true"/>
-
+        android:id="@+id/list"/>
 
 </RelativeLayout>

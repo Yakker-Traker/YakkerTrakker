@@ -560,7 +560,6 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             fragmentTransaction.commit();
 
         } else if (id == R.id.tides){
-            Toast.makeText(getApplicationContext(), "Tides", Toast.LENGTH_SHORT).show();
             tidesFragment fragment = new tidesFragment();
             android.support.v4.app.FragmentTransaction fragmentTransaction =
                     getSupportFragmentManager().beginTransaction();
