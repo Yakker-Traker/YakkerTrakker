@@ -3,16 +3,20 @@
 
     <item
         android:id="@+id/save_route"
-        android:title="Save Route" />
+        android:title="Save Route"
+        android:icon="@drawable/ic_action_save"/>
     <item
         android:id="@+id/weather"
-        android:title="Weather" />
+        android:title="Weather"
+        android:icon="@drawable/ic_action_about"/>
     <item
         android:id="@+id/tides"
-        android:title="Tides" />
+        android:title="Tides"
+        android:icon="@drawable/ic_action_about"/>
     <item
         android:id="@+id/settings"
-        android:title="Settings" />
+        android:title="Settings"
+        android:icon="@drawable/ic_action_settings"/>
 
 
 </menu>

@@ -12,17 +12,24 @@
     <string name="Start_Text">Start Route</string>
     <string name="Stop_Text">Stop Route</string>
 
-    <string name="key_meters"> m.</string>
-    <string name="key_kilometers"> Km.</string>
-    <string name="key_feet"> ft.</string>
-    <string name="key_yards"> yd.</string>
-    <string name="key_sec"> s.</string>
-    <string name="key_min"> min.</string>
-    <string name="key_hour"> hr.</string>
+    <string name="key_distanceHeader">Distance: </string>
+    <string name="key_meters"> m </string>
+    <string name="key_kilometers"> Km </string>
+    <string name="key_feet"> ft </string>
+    <string name="key_yards"> yd </string>
+    <string name="key_sec"> s</string>
+    <string name="key_min"> min</string>
+    <string name="key_hour"> hr</string>
+    <string name="key_timeHeader">Time: </string>
+    <string name="key_metersPerSecond"> m/s</string>
+    <string name="key_speedHeader">Speed:</string>
     <string name="key_cancel">Cancel</string>
     <string name="key_addRoute">Add Route</string>
     <string name="key_drawerOpen">Open</string>
     <string name="key_drawerClose">Close</string>
+    <string name="key_distanceDefault">Distance: 0 m</string>
+    <string name="key_timeDefault">Time: 0 s</string>
+    <string name="key_speedDefault">Speed: 0 m/s</string>
 
     <string name="db_Button_Name">Start DataBase Test</string>
     <string name="Add_Route_Button">Add Route</string>

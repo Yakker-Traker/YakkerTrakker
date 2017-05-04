@@ -61,6 +61,8 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import android.support.v7.widget.Toolbar;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -103,6 +105,13 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         routeStarted = false;
         localDB = new Yak_Trak_SQLite(this);
         final String title = "Trakker";
+
+        TextView timeText = (TextView) findViewById(R.id.time_window);
+        TextView speedText = (TextView) findViewById(R.id.speed_window);
+        TextView distanceText = (TextView) findViewById(R.id.details_window);
+        distanceText.setText(getResources().getString(R.string.key_distanceDefault));
+        speedText.setText(getResources().getString(R.string.key_timeDefault));
+        timeText.setText(getResources().getString(R.string.key_speedDefault));
 
         mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(
@@ -225,15 +234,19 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                         myRoute.add(mLastLocation);
                         makeMarker(mLastLocation);
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
-                        mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+                        if(myBundle == null) {
+                            myCalendar = Calendar.getInstance();
+                            startSec = myCalendar.get(Calendar.SECOND);
+                            startMin = myCalendar.get(Calendar.MINUTE);
+                            startHour = myCalendar.get(Calendar.HOUR_OF_DAY);
+                        }
                     }
                     routeStarted = true;
                 }
                 else{
                     if(mLastLocation != null){
                         myRoute.add(mLastLocation);
-                        mMap.clear();
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
                     }
                     //routeFinished();
                     routeStarted = false;
@@ -389,7 +402,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
 
         //Pop dialogue to get Route Name and comments here
         Dialog nameDialog = new Dialog(this);
-        nameDialog.show();
+        //nameDialog.show();
 
         Coordinates curCoord;
         Routes curRoute = new Routes(routeName, routeDate, routeComment);
@@ -399,6 +412,15 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             curCoord = new Coordinates(temp.getLatitude(), temp.getLongitude(), routeName);
             localDB.addCoordinateIntoDataBase(curCoord);
         }
+        TextView timeText = (TextView) findViewById(R.id.time_window);
+        TextView speedText = (TextView) findViewById(R.id.speed_window);
+        TextView distanceText = (TextView) findViewById(R.id.details_window);
+        distanceText.setText(getResources().getString(R.string.key_distanceDefault));
+        speedText.setText(getResources().getString(R.string.key_timeDefault));
+        timeText.setText(getResources().getString(R.string.key_speedDefault));
+        startStop.setChecked(false);
+        routeStarted = false;
+        mMap.clear();
         myRoute.clear();
         return;
     }
@@ -414,9 +436,12 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 myDistance = myDistance + temp1.distanceTo(temp2);
             }
         }
+        else{
+            myDistance = 0;
+        }
         int tempDistance = (int) myDistance;
         String distanceString = Integer.toString(tempDistance);
-        distanceString = new StringBuilder().append(distanceString).append(getResources().getString(R.string.key_meters)).toString();
+        distanceString = new StringBuilder().append(getResources().getString(R.string.key_distanceHeader)).append(" ").append(distanceString).append(getResources().getString(R.string.key_meters)).toString();
         distanceText.setText(distanceString);
         return;
     }
@@ -439,36 +464,36 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             String minString = Integer.toString(curMin);
             String secString = Integer.toString(curSec);
 
-            timeString = new StringBuilder().append(hourString).append(getResources().getString(R.string.key_hour)).append(" ").append(minString).append(getResources().getString(R.string.key_min)).append(" ").append(secString).append(getResources().getString(R.string.key_sec)).toString();
+            timeString = new StringBuilder().append(getResources().getString(R.string.key_timeHeader)).append(" ").append(hourString).append(getResources().getString(R.string.key_hour)).append(" ").append(minString).append(getResources().getString(R.string.key_min)).append(" ").append(secString).append(getResources().getString(R.string.key_sec)).toString();
 
         }
 
         if(curHour > 0 && curMin > 0 && curSec <= 0){
             String hourString = Integer.toString(curHour);
             String minString = Integer.toString(curMin);
-            timeString = new StringBuilder().append(hourString).append(getResources().getString(R.string.key_hour)).append(" ").append(minString).append(getResources().getString(R.string.key_min)).toString();
+            timeString = new StringBuilder().append(getResources().getString(R.string.key_timeHeader)).append(" ").append(hourString).append(getResources().getString(R.string.key_hour)).append(" ").append(minString).append(getResources().getString(R.string.key_min)).toString();
         }
 
         if(curHour > 0 && curMin <= 0 && curSec <= 0){
             String hourString = Integer.toString(curHour);
-            timeString = new StringBuilder().append(hourString).append(getResources().getString(R.string.key_hour)).toString();
+            timeString = new StringBuilder().append(getResources().getString(R.string.key_timeHeader)).append(" ").append(hourString).append(getResources().getString(R.string.key_hour)).toString();
         }
 
         if(curHour <= 0 && curMin > 0 && curSec > 0){
             String minString = Integer.toString(curMin);
             String secString = Integer.toString(curSec);
-            timeString = new StringBuilder().append(minString).append(getResources().getString(R.string.key_min)).append(" ").append(secString).append(getResources().getString(R.string.key_sec)).toString();
+            timeString = new StringBuilder().append(getResources().getString(R.string.key_timeHeader)).append(" ").append(minString).append(getResources().getString(R.string.key_min)).append(" ").append(secString).append(getResources().getString(R.string.key_sec)).toString();
 
         }
 
         if(curHour <= 0 && curMin > 0 && curSec <= 0){
             String minString = Integer.toString(curMin);
-            timeString = new StringBuilder().append(minString).append(getResources().getString(R.string.key_min)).toString();
+            timeString = new StringBuilder().append(getResources().getString(R.string.key_timeHeader)).append(" ").append(minString).append(getResources().getString(R.string.key_min)).toString();
         }
 
         if(curHour <= 0 && curMin <= 0 && curSec > 0){
             String secString = Integer.toString(curSec);
-            timeString = new StringBuilder().append(secString).append(getResources().getString(R.string.key_sec)).toString();
+            timeString = new StringBuilder().append(getResources().getString(R.string.key_timeHeader)).append(" ").append(secString).append(getResources().getString(R.string.key_sec)).toString();
         }
 
         timeText.setText(timeString);
@@ -507,7 +532,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         }
         int speed = (int) (localDist/time);
         String speedString = Integer.toString(speed);
-        String speedSet = new StringBuilder().append(speedString).append(" m/s").toString();
+        String speedSet = new StringBuilder().append(getResources().getString(R.string.key_speedHeader)).append(" ").append(speedString).append(" m/s").toString();
         speedText.setText(speedSet);
         return;
     }
@@ -537,7 +562,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                     getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.content_frame, fragment);
             fragmentTransaction.commit();
-
+            routeFinished();
             clear.setVisibility(View.VISIBLE);
         } else if (id == R.id.weather){
             weatherFragment fragment = new weatherFragment();
@@ -563,7 +588,6 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
 
 
         }
-
         mDrawer.closeDrawer(GravityCompat.START);
         return true;
     }

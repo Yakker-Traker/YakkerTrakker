@@ -9,8 +9,8 @@
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/content_frame">
-
+        android:id="@+id/content_frame"
+        android:background="#ff9c24">
 
         <!-- Put anything you want in the Relative Layout or the frame layout will break-->
         <RelativeLayout
@@ -26,8 +26,6 @@
                 android:text="X"
                 android:textColor="#FFF"
                 android:id="@+id/clearButton"
-
-
                 />
 
             <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -39,42 +37,54 @@
                 android:layout_height="match_parent"
                 tools:context="com.yakkertrakker.www.myapplication.MapsActivity"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true" />
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="66dp"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right">
-
-                <TextView
-                    android:id="@+id/details_window"
-                    android:textColor="#ffffff"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom" />
-                <TextView
-                    android:id="@+id/time_window"
-                    android:textColor="#ffffff"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"/>
-                <TextView
-                    android:id="@+id/speed_window"
-                    android:textColor="#ffffff"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"/>
+                android:layout_height="wrap_content">
                 <ToggleButton
                     android:id="@+id/start_stop"
                     android:button="@drawable/toggle_button_images"
                     android:background="@null"
                     android:textOff=""
                     android:textOn=""
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="bottom"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_margin="1dp"/>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right">
+                    <TextView
+                        android:id="@+id/details_window"
+                        android:textColor="#fff"
+                        android:text="@string/key_distanceHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+                        />
+                    <TextView
+                        android:id="@+id/time_window"
+                        android:textColor="#fff"
+                        android:text="@string/key_timeHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="22dp"/>
+                    <TextView
+                        android:id="@+id/speed_window"
+                        android:textColor="#fff"
+                        android:text="@string/key_speedHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="44dp"/>
+
+                </RelativeLayout>
 
             </LinearLayout>
+
+
         </RelativeLayout>
 
 </FrameLayout>
