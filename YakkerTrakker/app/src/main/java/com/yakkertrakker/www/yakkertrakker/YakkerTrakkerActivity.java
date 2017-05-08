@@ -671,4 +671,3 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
 
 
 }
-//This is my branch.
