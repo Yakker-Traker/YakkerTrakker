@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
@@ -19,6 +20,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -37,6 +40,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -107,6 +111,9 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         localDB = new Yak_Trak_SQLite(this);
         final String title = "Trakker";
 
+        Calendar myCal = Calendar.getInstance();
+        String routeDate = new StringBuilder().append(String.valueOf(myCal.get(Calendar.MONTH))).append("-").append(String.valueOf(myCal.get(Calendar.DATE))).append("-").append(String.valueOf(myCal.get(Calendar.YEAR))).toString();
+
         TextView timeText = (TextView) findViewById(R.id.time_window);
         TextView speedText = (TextView) findViewById(R.id.speed_window);
         TextView distanceText = (TextView) findViewById(R.id.details_window);
@@ -156,7 +163,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 mDrawer.openDrawer(GravityCompat.START);
             }
             else{
-
+                mDrawer.openDrawer(GravityCompat.START);
             }
         }
     });
@@ -387,36 +394,6 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         return null;
     }
 
-    public void routeFinished(){
-        //Details set to defaults
-        String routeName = getResources().getString(R.string.key_defaultRoute);
-        String routeDate = getResources().getString(R.string.key_defaultDate);
-        String routeComment = getResources().getString(R.string.key_defaultComment);
-
-        //Pop dialogue to get Route Name and comments here
-        Dialog nameDialog = new Dialog(this);
-        //nameDialog.show();
-
-        Coordinates curCoord;
-        Routes curRoute = new Routes(routeName, routeDate, routeComment);
-        localDB.addRouteIntoDataBase(curRoute);
-        for(int i = 0; i < myRoute.size(); i++){
-            Location temp = myRoute.get(i);
-            curCoord = new Coordinates(temp.getLatitude(), temp.getLongitude(), routeName);
-            localDB.addCoordinateIntoDataBase(curCoord);
-        }
-        TextView timeText = (TextView) findViewById(R.id.time_window);
-        TextView speedText = (TextView) findViewById(R.id.speed_window);
-        TextView distanceText = (TextView) findViewById(R.id.details_window);
-        distanceText.setText(getResources().getString(R.string.key_distanceDefault));
-        speedText.setText(getResources().getString(R.string.key_timeDefault));
-        timeText.setText(getResources().getString(R.string.key_speedDefault));
-        startStop.setChecked(false);
-        routeStarted = false;
-        mMap.clear();
-        myRoute.clear();
-        return;
-    }
 
     public void setDistance(){
         myDistance = 0;
@@ -433,8 +410,16 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             myDistance = 0;
         }
         int tempDistance = (int) myDistance;
-        String distanceString = Integer.toString(tempDistance);
-        distanceString = new StringBuilder().append(getResources().getString(R.string.key_distanceHeader)).append(" ").append(distanceString).append(getResources().getString(R.string.key_meters)).toString();
+        String distanceString;
+        if(myDistance/1000 != 0){
+            distanceString = Integer.toString(tempDistance/1000);
+            distanceString = new StringBuilder().append(getResources().getString(R.string.key_distanceHeader)).append(" ").append(distanceString).append(getResources().getString(R.string.key_kilometers)).toString();
+        }
+        else {
+            distanceString = Integer.toString(tempDistance);
+            distanceString = new StringBuilder().append(getResources().getString(R.string.key_distanceHeader)).append(" ").append(distanceString).append(getResources().getString(R.string.key_meters)).toString();
+
+        }
         distanceText.setText(distanceString);
         return;
     }
@@ -550,7 +535,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         int id = item.getItemId();
 
         if(id == R.id.save_route){
-            routeFinished();
+            routeDialog();
 
         } else if (id == R.id.weather){
             weatherFragment fragment = new weatherFragment();
@@ -587,9 +572,100 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             fragmentTransaction.replace(R.id.content_frame, fragment);
             fragmentTransaction.commit();
         }
-        openDrawer.setChecked(false);
+        openDrawer.setChecked(true);
         mDrawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void routeFinished(String name, String comments){
+        String routeName = name;
+        String routeComment = comments;
+        Calendar myCal = Calendar.getInstance();
+        String routeDate = new StringBuilder().append(String.valueOf(myCal.get(Calendar.MONTH))).append("-").append(String.valueOf(myCal.get(Calendar.DATE))).append("-").append(String.valueOf(myCal.get(Calendar.YEAR))).toString();
+
+        if(routeComment == ""){
+            routeComment = getResources().getString(R.string.key_defaultComment);
+        }
+        Coordinates curCoord;
+        Routes curRoute = new Routes(routeName, routeDate, routeComment);
+        localDB.addRouteIntoDataBase(curRoute);
+        for(int i = 0; i < myRoute.size(); i++){
+            Location temp = myRoute.get(i);
+            curCoord = new Coordinates(temp.getLatitude(), temp.getLongitude(), routeName);
+            localDB.addCoordinateIntoDataBase(curCoord);
+        }
+
+        TextView timeText = (TextView) findViewById(R.id.time_window);
+        TextView speedText = (TextView) findViewById(R.id.speed_window);
+        TextView distanceText = (TextView) findViewById(R.id.details_window);
+        distanceText.setText(getResources().getString(R.string.key_distanceDefault));
+        speedText.setText(getResources().getString(R.string.key_timeDefault));
+        timeText.setText(getResources().getString(R.string.key_speedDefault));
+
+        startStop.setChecked(false);
+        routeStarted = false;
+        mMap.clear();
+        myRoute.clear();
+        return;
+    }
+
+    private void routeDialog(){
+        final EditText input = new EditText(YakkerTrakkerActivity.this);
+        LinearLayout.LayoutParams oneInput = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setLayoutParams(oneInput);
+        AlertDialog dialog = new AlertDialog.Builder(YakkerTrakkerActivity.this).create();
+        dialog.setView(input);
+        dialog.setTitle("Enter a Route Name");
+        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Save Route", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(input.getText().toString() == ""){
+                    Toast.makeText(getApplicationContext(), "Name Required", Toast.LENGTH_SHORT).show();
+                }else {
+                    routeFinished(input.getText().toString(), "");
+                    dialog.dismiss();
+                }
+            }
+        });
+        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Add Comments", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                commentDialog(input.getText().toString());
+            }
+        });
+        dialog.show();
+    }
+
+    private void commentDialog(String name){
+        final String localName = name;
+        final String localComment = "";
+        final EditText input = new EditText(YakkerTrakkerActivity.this);
+        LinearLayout.LayoutParams oneInput = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setLayoutParams(oneInput);
+        AlertDialog dialog = new AlertDialog.Builder(YakkerTrakkerActivity.this).create();
+        dialog.setView(input);
+        dialog.setTitle("Enter a Route Name");
+        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Save Route", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                routeFinished(localName, localComment);
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
     //End Main
 
