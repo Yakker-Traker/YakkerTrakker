@@ -17,6 +17,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -150,11 +151,11 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
+        /* Need to uncomment to use map
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
+        */
         openDrawer = (ToggleButton) findViewById(R.id.drawer_button);
         openDrawer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
         @Override
@@ -613,7 +614,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         final EditText input = new EditText(YakkerTrakkerActivity.this);
         LinearLayout.LayoutParams oneInput = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         input.setLayoutParams(oneInput);
-        AlertDialog dialog = new AlertDialog.Builder(YakkerTrakkerActivity.this).create();
+        final AlertDialog dialog = new AlertDialog.Builder(YakkerTrakkerActivity.this).create();
         dialog.setView(input);
         dialog.setTitle("Enter a Route Name");
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
@@ -625,22 +626,40 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Save Route", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(input.getText().toString() == ""){
+
+            }
+        });
+        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Add Comments", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(TextUtils.isEmpty(input.getText().toString())){
                     Toast.makeText(getApplicationContext(), "Name Required", Toast.LENGTH_SHORT).show();
+
                 }else {
                     routeFinished(input.getText().toString(), "");
                     dialog.dismiss();
                 }
             }
         });
-        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Add Comments", new DialogInterface.OnClickListener() {
+        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                commentDialog(input.getText().toString());
+            public void onClick(View v) {
+                if(TextUtils.isEmpty(input.getText().toString())) {
+                    Toast.makeText(getApplicationContext(), "Name Required", Toast.LENGTH_SHORT).show();
+
+                }else {
+                    dialog.dismiss();
+                    commentDialog(input.getText().toString());
+                }
             }
         });
-        dialog.show();
     }
 
     private void commentDialog(String name){
