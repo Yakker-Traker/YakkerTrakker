@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -100,6 +101,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     private ListView mDrawerList;
     private ToggleButton openDrawer;
     Button clear;
+    private android.app.ProgressDialog pDialog;
 
     Yak_Trak_SQLite localDB;
 

@@ -43,7 +43,6 @@ public class weatherFragment extends Fragment {
     private Button weatherButton;
     Weather weather = new Weather();
 
-
     public void changeCity(String name){
         // Change the eather
         renderWeatherData(name);
@@ -67,6 +66,7 @@ public class weatherFragment extends Fragment {
         humidity = (TextView) view.findViewById(R.id.humidityText);
         wind = (TextView) view.findViewById(R.id.windText);
         weatherButton = (Button) view.findViewById(R.id.weather_button) ;
+
 
        weatherButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
