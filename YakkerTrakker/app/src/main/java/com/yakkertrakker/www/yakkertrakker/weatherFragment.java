@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -38,11 +39,15 @@ public class weatherFragment extends Fragment {
     private ImageView iconView;
     private TextView description;
     private TextView humidity;
-    private TextView pressure;
     private TextView wind;
-    private Button closeButton;
+    private Button weatherButton;
     Weather weather = new Weather();
 
+
+    public void changeCity(String name){
+        // Change the eather
+        renderWeatherData(name);
+    }
 
     public weatherFragment() {
         // Required empty public constructor
@@ -53,20 +58,31 @@ public class weatherFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(fragment_weather, container, false);
+        final View view = inflater.inflate(fragment_weather, container, false);
 
         cityName = (TextView) view.findViewById(R.id.cityText);
         iconView = (ImageView) view.findViewById(R.id.thumbnailIcon);
         temp = (TextView) view.findViewById(R.id.tempText);
         description = (TextView) view.findViewById(R.id.cloudText);
         humidity = (TextView) view.findViewById(R.id.humidityText);
-        pressure = (TextView) view.findViewById(R.id.pressureText);
         wind = (TextView) view.findViewById(R.id.windText);
+        weatherButton = (Button) view.findViewById(R.id.weather_button) ;
+
+       weatherButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                EditText change_weather = (EditText) view.findViewById(R.id.weather_search);
+                String weather_change = change_weather.getText().toString();
+                changeCity(weather_change);
+            }
+        });
+
+
 
 
         //ChangeCity changeCity = new ChangeCity(YakerTrakerActivity.this);
         //renderWeatherData(changeCity.getCity());
-         renderWeatherData("Fremont,US");
+
+        renderWeatherData("Rohnert Park,US");
 
 
 
@@ -133,7 +149,6 @@ public class weatherFragment extends Fragment {
             cityName.setText(weather.location.getCity() + "," + weather.location.getCountry());
             temp.setText("" + temperatureFormat + "°F");
             humidity.setText("Humidity: " + weather.currentCondition.getHumidity() + "%");
-            pressure.setText("Pressure: " + weather.currentCondition.getPressure() + " hPa");
             wind.setText("Wind: " + weather.wind.getSpeed() + " mps");
             description.setText("Condition " + weather.currentCondition.getCondition() + " (" +
                     weather.currentCondition.getDescription() + ")");
