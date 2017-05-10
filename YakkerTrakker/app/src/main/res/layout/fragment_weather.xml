@@ -95,7 +95,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="32dp"
         android:elevation="0dp"
-        android:text="Change City Location" />
+        android:text="Change City Location"
+        android:textSize="36sp" />
 
 
 </RelativeLayout>
