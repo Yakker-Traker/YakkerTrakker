@@ -151,11 +151,11 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
-        /*
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        */
+
         openDrawer = (ToggleButton) findViewById(R.id.drawer_button);
         openDrawer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
         @Override

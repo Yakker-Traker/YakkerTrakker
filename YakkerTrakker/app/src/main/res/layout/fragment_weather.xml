@@ -3,7 +3,7 @@
     android:id="@+id/weatherFrag"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/weather_background"
+    android:background="@color/colorPrimary"
     android:visibility="visible"
     tools:context="com.yakkertrakker.www.yakkertrakker.weatherFragment">
 
