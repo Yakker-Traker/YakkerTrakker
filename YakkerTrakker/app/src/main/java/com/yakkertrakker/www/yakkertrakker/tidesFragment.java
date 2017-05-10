@@ -2,6 +2,7 @@ package com.yakkertrakker.www.yakkertrakker;
 
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -33,16 +34,17 @@ import SQLite.Yak_Trak_SQLite;
 public class tidesFragment extends Fragment {
     java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyMMdd");
     String beginDate = sdf.format(new java.util.Date());
-    //String beginDate = "20172904";
-    //String endDate = "20173004";
-    String station = "9414290";
+    String pickStation = "9414290";
+    String station = "9414863";
     private String TAG = tidesFragment.class.getSimpleName();
     private android.app.ProgressDialog pDialog;
     private ListView lv;
 
     private String url = "https://tidesandcurrents.noaa.gov/api/datagetter?begin_date=" +
             beginDate+
-            "&range=48&station=9414290&product=predictions&datum=MTL&units=english&time_zone=lst&application=ports_screen&format=json";
+            "&range=168&station="
+            +station+
+            "&product=predictions&datum=MLLW&units=english&time_zone=lst&application=ports_screen&format=json";
 
     java.util.ArrayList<java.util.HashMap<String, String>> tideList;
     java.util.ArrayList<java.util.HashMap<String, String>> highLowTide;
@@ -66,6 +68,24 @@ public class tidesFragment extends Fragment {
         new GetContacts().execute();
 
         return view;
+    }
+
+    public String parseDateToddMMyyyy(String time) {
+        String inputPattern = "yyyy-MM-dd HH:mm";
+        String outputPattern = "dd-MMM-yyyy h:mm a";
+        java.text.SimpleDateFormat inputFormat = new java.text.SimpleDateFormat(inputPattern);
+        java.text.SimpleDateFormat outputFormat = new java.text.SimpleDateFormat(outputPattern);
+
+        java.util.Date date = null;
+        String str = null;
+
+        try {
+            date = inputFormat.parse(time);
+            str = outputFormat.format(date);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+        return str;
     }
 
 
@@ -103,6 +123,8 @@ private class GetContacts extends AsyncTask<Void, Void, Void> {
 
                     String tides = c.getString("t");
                     String height = c.getString("v");
+
+                    tides = parseDateToddMMyyyy(tides);
 
                     HashMap<String, String> water = new HashMap<>();
 
@@ -144,29 +166,48 @@ private class GetContacts extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onPostExecute(Void result) {
-        super.onPostExecute(result);
-//**************************************************************************************************
-            /*for (int i = 0; i < tideList.size(); i++) {
-                if(v.tideList(i-1)<v.tideList(i)&&v.tideList(i+1)<v.tideList(i)){
-                    Hightide
-                    highLowTide.add(stuff);
-                }
-                if(v.tideList(i-1)>v.tideList(i)&&v.tideList(i+1)>v.tideList(i)){
-                    Lowtide
-                    highLowTide.add(stuff);
-                }
+        //super.onPostExecute(result);
 
-                highLowTide.add(stuff);
-            }*/
-//**************************************************************************************************
+        for(int j = 1; j<tideList.size()-1; j++){
+
+            String tester = tideList.get(j-1).get("v");
+            String test = tideList.get(j).get("v");
+            String testest = tideList.get(j+1).get("v");
+
+            //String Dater = tideList.get(j).get("t");
+
+            Double tallnessFirst = Double.parseDouble(tester);
+            Double tallnessMiddle = Double.parseDouble(test);
+            Double tallnessLast = Double.parseDouble(testest);
+
+            if (tallnessFirst<=tallnessMiddle && tallnessMiddle>=tallnessLast){
+
+                //hightide
+                highLowTide.add(tideList.get(j));
+                j+=2;
+
+            }else if(tallnessFirst>=tallnessMiddle && tallnessMiddle<=tallnessLast){
+
+                //lowtide
+                highLowTide.add(tideList.get(j));
+                j+=2;
+
+            }
+        }
+
+        super.onPostExecute(result);
+
         // Dismiss the progress dialog
         if (pDialog.isShowing())
             pDialog.dismiss();
 
-        ListAdapter adapter = new SimpleAdapter(tidesFragment.this.getContext(), tideList,
+        ListAdapter adapter = new SimpleAdapter(tidesFragment.this.getContext(), highLowTide,
                 R.layout.list_item, new String[]{ "t","v"},
                 new int[]{R.id.time, R.id.height});
+
         lv.setAdapter(adapter);
+
+        lv.setBackgroundColor(Color.LTGRAY);
     }
 
 }
