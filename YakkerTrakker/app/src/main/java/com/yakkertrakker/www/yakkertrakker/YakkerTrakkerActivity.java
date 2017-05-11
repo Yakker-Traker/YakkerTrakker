@@ -192,7 +192,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION);
             }
             else{
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION);
+
             }
         }
         return;
@@ -555,11 +555,13 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             fragmentTransaction.commit();
 
         } else if (id == R.id.settings){
+            /*
             settingsFragment fragment = new settingsFragment();
             android.support.v4.app.FragmentTransaction fragmentTransaction =
                     getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.content_frame, fragment);
             fragmentTransaction.commit();
+            */
 
         } else if (id == R.id.routes_access){
             savedRoutesFragment fragment = new savedRoutesFragment();
@@ -584,7 +586,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         String routeName = name;
         String routeComment = comments;
         Calendar myCal = Calendar.getInstance();
-        String routeDate = new StringBuilder().append(String.valueOf(myCal.get(Calendar.MONTH))).append("-").append(String.valueOf(myCal.get(Calendar.DATE))).append("-").append(String.valueOf(myCal.get(Calendar.YEAR))).toString();
+        String routeDate = new StringBuilder().append(String.valueOf(myCal.get(Calendar.MONTH))).append("/").append(String.valueOf(myCal.get(Calendar.DATE))).append("/").append(String.valueOf(myCal.get(Calendar.YEAR))).toString();
 
         if(routeComment == ""){
             routeComment = getResources().getString(R.string.key_defaultComment);
@@ -682,7 +684,12 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Save Route", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                routeFinished(localName, localComment);
+                if(TextUtils.isEmpty(input.getText().toString())){
+                    routeFinished(localName, localComment);
+                }
+                else{
+                    routeFinished(localName, input.getText().toString());
+                }
                 dialog.dismiss();
             }
         });

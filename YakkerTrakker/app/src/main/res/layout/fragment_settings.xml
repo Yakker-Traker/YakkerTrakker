@@ -1,37 +1,52 @@
-<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.yakkertrakker.www.yakkertrakker.settingsFragment">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Settings"
-        android:layout_centerInParent="true"
-        android:layout_centerHorizontal="true"
-        android:textAllCaps="true"/>
-
-</RelativeLayout>
--->
-
-
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/settingsFrag"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="#fff"
     tools:context="com.yakkertrakker.www.yakkertrakker.settingsFragment">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/units_text"
+            android:text="Units: "
+            android:textAlignment="center"
+            android:layout_marginEnd="24dp"
+            android:layout_alignBottom="@+id/units_spinner"
+            android:layout_toStartOf="@+id/units_spinner"
+            android:layout_alignParentTop="true" />
+
+        <Spinner
+            android:id="@+id/units_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"/>
+
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Settings"
-        android:layout_centerInParent="true"
-        android:layout_centerHorizontal="true"
-        android:textAllCaps="true"/>
+        android:id="@+id/map_type"
+        android:text="Map Type: "
+        android:textAlignment="center"
+        android:layout_marginEnd="24dp"
+        android:layout_alignBottom="@+id/units_spinner"
+        android:layout_toStartOf="@+id/units_spinner"
+        android:layout_alignParentTop="true" />
 
+    <Spinner
+        android:id="@+id/map_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignAbove="@+id/units_spinner"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
 
-</RelativeLayout>
+    </Spinner>
+
+</LinearLayout>

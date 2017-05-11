@@ -8,8 +8,8 @@
     <string name="key_route">ROUTE</string>
     <string name="key_routeStarted">ROUTE_STARTED</string>
     <string name="key_defaultRoute">Route</string>
-    <string name="key_defaultDate">We could not find a date. Sorry.</string>
-    <string name="key_defaultComment">Must not have been a great route, no comments were given.</string>
+    <string name="key_defaultDate">Date Not Found</string>
+    <string name="key_defaultComment">No comments were given.</string>
 
     <string name="main_button">=</string>
     <string name="Start_Text">Start Route</string>
@@ -43,5 +43,19 @@
     <string name="Enter_Comments">Enter Comments</string>
     <string name="Delete_Routes">Delete Route From the Database</string>
     <string name="Data_Message">Data Base Query Complete</string>
+
+    <string-array name="distance_choice_array">
+        <item>Feet</item>
+        <item>Yards</item>
+        <item>Meters</item>
+        <item>Kilometers</item>
+    </string-array>
+
+    <string-array name="map_choice_array">
+        <item>Satellite</item>
+        <item>Hybrid</item>
+        <item>Normal</item>
+        <item>Terrain</item>
+    </string-array>
 
 </resources>
