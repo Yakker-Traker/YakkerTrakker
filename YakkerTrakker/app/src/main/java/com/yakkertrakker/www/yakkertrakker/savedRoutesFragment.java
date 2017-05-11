@@ -98,7 +98,6 @@ public class savedRoutesFragment extends ListFragment implements OnItemClickList
 
         final AlertDialog dialog = new AlertDialog.Builder(savedRoutesFragment.this.getContext()).create();
 
-        dialog.setTitle("Delete Route?");
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
