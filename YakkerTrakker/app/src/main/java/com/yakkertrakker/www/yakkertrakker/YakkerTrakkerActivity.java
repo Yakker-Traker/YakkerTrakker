@@ -112,6 +112,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         setContentView(R.layout.activity_yakker_trakker);
         routeStarted = false;
         localDB = new Yak_Trak_SQLite(this);
+        localDB.insertTideData();
         final String title = "Trakker";
 
         Calendar myCal = Calendar.getInstance();
