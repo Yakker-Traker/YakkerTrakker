@@ -208,13 +208,14 @@ public class Yak_Trak_SQLite extends SQLiteOpenHelper {
         Yak_Trak_Database.close();
     }
 
-    public boolean findRouteInDataBase (String routeName){
+    public boolean findRouteInDataBase (String tideName){
 
-        String COMMAND = "SELECT * FROM "+ ROUTES_TABLE + " WHERE route_name == "+ "'" + routeName+ "'";
+        String COMMAND = "SELECT * FROM "+ ROUTES_TABLE + " WHERE route_name == "+ "'" + tideName+ "'";
         SQLiteDatabase Yak_Trak_Database = this.getWritableDatabase();
 
         Cursor cursor = Yak_Trak_Database.rawQuery(COMMAND, null);
         if (cursor.moveToFirst()){
+
             cursor.close();
             Yak_Trak_Database.close();
             return true;
@@ -222,6 +223,25 @@ public class Yak_Trak_SQLite extends SQLiteOpenHelper {
         cursor.close();
         Yak_Trak_Database.close();
         return false;
+    }
+
+    public String getTideFromDataBase (String tideName){
+
+        String COMMAND = "SELECT * FROM "+ "tides" + " WHERE station_name == "+ "'" + tideName+ "'";
+        SQLiteDatabase Yak_Trak_Database = this.getWritableDatabase();
+
+        Cursor cursor = Yak_Trak_Database.rawQuery(COMMAND, null);
+        String data ="";
+        if (cursor.moveToFirst()){
+            data += cursor.getString(1);
+            data += cursor.getString (2);
+            data += cursor.getString (3);
+            Yak_Trak_Database.close();
+            return data;
+        }
+        cursor.close();
+        Yak_Trak_Database.close();
+        return data;
     }
 
     // Delete an entire Route including corresponding routes from the table.
