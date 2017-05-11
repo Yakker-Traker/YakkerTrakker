@@ -50,7 +50,7 @@
                     android:layout_gravity="right">
                     <TextView
                         android:id="@+id/details_window"
-                        android:textColor="@color/text_color_default"
+                        android:textColor="@color/text_color_map"
                         android:text="@string/key_distanceHeader"
                         android:shadowColor="@color/text_shadow"
                         android:shadowDx="1"
@@ -62,7 +62,7 @@
                         />
                     <TextView
                         android:id="@+id/time_window"
-                        android:textColor="@color/text_color_default"
+                        android:textColor="@color/text_color_map"
                         android:text="@string/key_timeHeader"
                         android:shadowColor="@color/text_shadow"
                         android:shadowDx="1"
@@ -73,7 +73,7 @@
                         android:layout_marginTop="22dp"/>
                     <TextView
                         android:id="@+id/speed_window"
-                        android:textColor="@color/text_color_default"
+                        android:textColor="@color/text_color_map"
                         android:text="@string/key_speedHeader"
                         android:shadowColor="@color/text_shadow"
                         android:shadowDx="1"

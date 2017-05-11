@@ -17,10 +17,10 @@
             android:id="@+id/time"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:shadowColor="@color/text_shadow"
+            android:shadowColor="@color/text_shadow_white"
             android:shadowDx="1"
             android:shadowDy="1"
-            android:shadowRadius="10"
+            android:shadowRadius="5"
             android:paddingBottom="10dip"
             android:textColor="@color/text_color_default"
             android:textStyle="bold" />
@@ -34,10 +34,10 @@
             android:id="@+id/height"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:shadowColor="@color/text_shadow"
+            android:shadowColor="@color/text_shadow_white"
             android:shadowDx="1"
             android:shadowDy="1"
-            android:shadowRadius="10"
+            android:shadowRadius="5"
             android:textColor="@color/text_color_default"
             android:textStyle="bold" />
 

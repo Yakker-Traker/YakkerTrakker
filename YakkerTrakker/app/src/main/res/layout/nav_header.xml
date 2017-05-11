@@ -18,6 +18,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="5dp"
         android:text="Yakker Trakker"
+        android:textColor="#000"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         />
 

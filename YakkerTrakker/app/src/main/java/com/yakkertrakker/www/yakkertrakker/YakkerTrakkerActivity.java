@@ -171,9 +171,26 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             }
         }
     });
-        // Button added to clear Fragments can be deleted later after figureing
-        // out how to control the back button.
 
+        if(localDB.findRouteInDataBase("Current")) {
+            List<Routes> rList = localDB.getAllRoutesFromDataBase();
+            List<Coordinates> coordList;
+            for (int i = 0; i < rList.size(); i++) {
+                Routes tempRoute = rList.get(i);
+                if (tempRoute.getRoute_name().equals("Current")) {
+                    coordList = localDB.getCoordinatesInRoute(tempRoute);
+                    for (int j = 0; j < coordList.size(); j++) {
+                        Coordinates tempCoord = coordList.get(i);
+                        Location tempLoc = new Location("");
+                        tempLoc.setLatitude(tempCoord.getLatitude());
+                        tempLoc.setLongitude(tempCoord.getLongitude());
+                        myRoute.add(tempLoc);
+                        makeMarker(tempLoc);
+                    }
+                    localDB.deleteRouteFromDataBase(tempRoute.getRoute_name());
+                }
+            }
+        }
     }
 
 
@@ -213,6 +230,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
@@ -291,6 +309,8 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 routeStarted = myBundle.getBoolean(getResources().getString(R.string.key_routeStarted));
             }
         }
+
+
         /*
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
@@ -387,7 +407,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title(titleStr);
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
         if(mMap != null) {
             currLocationMarker = mMap.addMarker(markerOptions);
         }
@@ -600,12 +620,6 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             curCoord = new Coordinates(temp.getLatitude(), temp.getLongitude(), routeName);
             localDB.addCoordinateIntoDataBase(curCoord);
         }
-
-        savedRoutesFragment fragment = new savedRoutesFragment();
-        android.support.v4.app.FragmentTransaction fragmentTransaction =
-                getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.content_frame, fragment);
-        fragmentTransaction.commit();
 
         TextView timeText = (TextView) findViewById(R.id.time_window);
         TextView speedText = (TextView) findViewById(R.id.speed_window);

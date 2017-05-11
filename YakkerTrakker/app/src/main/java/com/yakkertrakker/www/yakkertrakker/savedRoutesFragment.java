@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-
+import android.support.v4.app.FragmentActivity;
 
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,7 @@ public class savedRoutesFragment extends ListFragment implements OnItemClickList
 
         //db.addRouteIntoDataBase(a);
 
-
+/*
         Routes c = new Routes("Delete Selected Routes", "", "");
         boolean found = db.findRouteInDataBase("Delete Selected Routes");
         if (found == false)
@@ -66,6 +67,7 @@ public class savedRoutesFragment extends ListFragment implements OnItemClickList
             db.addRouteIntoDataBase(c);
 
         }
+        */
         List<Routes> rList = db.getAllRoutesFromDataBase();
         int size = rList.size();
         String[] routeNames = new String[size];
@@ -96,19 +98,21 @@ public class savedRoutesFragment extends ListFragment implements OnItemClickList
 
         final AlertDialog dialog = new AlertDialog.Builder(savedRoutesFragment.this.getContext()).create();
 
-        dialog.setTitle("Enter a Route Name");
+        dialog.setTitle("Delete Route?");
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
         });
+
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Set as Current", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
             }
         });
+
         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -116,13 +120,15 @@ public class savedRoutesFragment extends ListFragment implements OnItemClickList
             }
         });
         dialog.show();
+
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                setCurrentRoute(parent, view, position, id);
                 dialog.dismiss();
             }
         });
+
         dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,9 +137,9 @@ public class savedRoutesFragment extends ListFragment implements OnItemClickList
             }
         });
 
+
         //---------------------------------------
 /*
-
         Yak_Trak_SQLite db = new Yak_Trak_SQLite(getActivity());
         List<Routes> rList = db.getAllRoutesFromDataBase();
         int size = rList.size();
@@ -177,10 +183,12 @@ public class savedRoutesFragment extends ListFragment implements OnItemClickList
                     }
 
             }
-            if (size-1 != 0)
-                Toast.makeText(getActivity(), "Routes were sucessfully deleted", Toast.LENGTH_SHORT).show();
-            else
+            if (size-1 != 0){
+
+            }
+            else {
                 Toast.makeText(getActivity(), "No routes to delete", Toast.LENGTH_SHORT).show();
+            }
 
 
             rList = db.getAllRoutesFromDataBase();
@@ -196,9 +204,7 @@ public class savedRoutesFragment extends ListFragment implements OnItemClickList
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.rowlayout, R.id.RouteNametb, routeNames);
             setListAdapter(adapter);
         }
-
 */
-
     }
 
 
@@ -217,67 +223,89 @@ public class savedRoutesFragment extends ListFragment implements OnItemClickList
         List<Routes> rList = db.getAllRoutesFromDataBase();
         int size = rList.size();
 
-        if (position != size - 1 && selected.get(position) == "0") {
-            TextView r = (TextView) view.findViewById(R.id.RouteNametb);
-            r.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-            selected.set(position, "1");
-
-        } else {
-            TextView r = (TextView) view.findViewById(R.id.RouteNametb);
-            r.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-            selected.set(position, "0");
-        }
-
-        Routes c = new Routes("Delete Selected Routes", "", "");
-        boolean found = db.findRouteInDataBase("Delete Selected Routes");
-        if (found == false)
-            db.addRouteIntoDataBase(c);
-        else {
-            db.deleteRouteFromDataBase(c.getRoute_name());
-            db.addRouteIntoDataBase(c);
-
-        }
         rList = db.getAllRoutesFromDataBase();
         size = rList.size();
+        TextView r = (TextView) view.findViewById(R.id.RouteNametb);
+
         String[] routeNames = new String[size];
         for (int i = 0; i < rList.size(); i++) {
             Routes temp = rList.get(i);
-            routeNames[i] = temp.getRoute_name() + "\t " + temp.getDate_created() + "\n\t" + temp.getComments();
+            routeNames[i] = temp.getRoute_name();
+            //Toast.makeText(getActivity(), routeNames[i], Toast.LENGTH_SHORT).show();
         }
 
+        String tempName = r.getText().toString();
+        String[] tokens = tempName.split("\t");
+        tempName = tokens[0];
 
-        if (position == size - 1) {
-            for (int i = 0; i < selected.size() - 1; i++) {
-                String a = selected.get(i);
-                String b = "1";
-                if (a.equals(b)) {
-                    db.deleteRouteFromDataBase(rList.get(i).getRoute_name());
-                }
 
+        for(int i = 0; i < rList.size(); i++){
+            String temp1 = routeNames[i];
+            if(temp1.equals(tempName)){
+                Routes tempRoute = rList.get(i);
+                db.deleteRouteFromDataBase(tempRoute.getRoute_name());
             }
-            if (size - 1 != 0)
-                Toast.makeText(getActivity(), "Routes were sucessfully deleted", Toast.LENGTH_SHORT).show();
-            else
-                Toast.makeText(getActivity(), "No routes to delete", Toast.LENGTH_SHORT).show();
-
-
-            rList = db.getAllRoutesFromDataBase();
-            size = rList.size();
-            routeNames = new String[size];
-            for (int i = 0; i < rList.size(); i++) {
-                Routes temp = rList.get(i);
-                routeNames[i] = temp.getRoute_name() + ":\t " + temp.getDate_created() + "\n\t" + temp.getComments();
-            }
-
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.rowlayout, R.id.RouteNametb, routeNames);
-            setListAdapter(adapter);
         }
+        savedRoutesFragment fragment = new savedRoutesFragment();
+        android.support.v4.app.FragmentTransaction fragmentTransaction = savedRoutesFragment.this.getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.content_frame, fragment);
+        fragmentTransaction.commit();
 
     }
+
+    private void setCurrentRoute(final AdapterView<?> parent, final View view, final int position, final long id){
+
+        Yak_Trak_SQLite db = new Yak_Trak_SQLite(getActivity());
+        List<Routes> rList = db.getAllRoutesFromDataBase();
+        int size = rList.size();
+
+        rList = db.getAllRoutesFromDataBase();
+        size = rList.size();
+        TextView r = (TextView) view.findViewById(R.id.RouteNametb);
+
+        String[] routeNames = new String[size];
+        for (int i = 0; i < rList.size(); i++) {
+            Routes temp = rList.get(i);
+            routeNames[i] = temp.getRoute_name();
+            //Toast.makeText(getActivity(), routeNames[i], Toast.LENGTH_SHORT).show();
+        }
+
+        String tempName = r.getText().toString();
+        String[] tokens = tempName.split("\t");
+        tempName = tokens[0];
+
+
+        for(int i = 0; i < rList.size(); i++){
+            String temp1 = routeNames[i];
+            if(temp1.equals(tempName)){
+                Routes tempRoute = rList.get(i);
+                Routes currentRoute = tempRoute;
+                currentRoute.setRoute_name("Current");
+                db.addRouteIntoDataBase(currentRoute);
+                List<Coordinates> tempList = db.getCoordinatesInRoute(tempRoute);
+                for(int j = 0; j < tempList.size(); j++){
+                    Coordinates tempCoord = tempList.get(i);
+                    tempCoord.setRoute_name("Current");
+                    db.addCoordinateIntoDataBase(tempCoord);
+                }
+            }
+        }
+
+        final android.support.v4.app.Fragment fragment = new Fragment();
+        android.support.v4.app.FragmentTransaction fragmentTransaction = savedRoutesFragment.this.getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.content_frame, fragment);
+        fragmentTransaction.commit();
+    }
+
 }
 
-
+/*
+final android.support.v4.app.Fragment fragment = new Fragment();
+            android.support.v4.app.FragmentTransaction fragmentTransaction =
+                    getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.content_frame, fragment);
+            fragmentTransaction.commit();
+ */
 
 
 

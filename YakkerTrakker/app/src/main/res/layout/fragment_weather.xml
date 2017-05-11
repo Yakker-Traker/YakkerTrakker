@@ -16,8 +16,12 @@
         android:layout_marginTop="152dp"
         android:layout_toEndOf="@+id/thumbnailIcon"
         android:text="USA"
-        android:textColor="#fff"
-        android:textSize="40sp"
+        android:textColor="@color/text_color_default"
+        android:textSize="25sp"
+        android:shadowColor="@color/text_shadow_white"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="10"
         android:textStyle="bold" />
 
     <ImageView
@@ -35,7 +39,11 @@
         android:layout_above="@+id/thumbnailIcon"
         android:layout_alignStart="@+id/cityText"
         android:text="12 Deg"
-        android:textColor="?android:attr/windowBackground"
+        android:shadowColor="@color/text_shadow_white"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="10"
+        android:textColor="@color/text_color_default"
         android:textSize="42sp"
         android:textStyle="bold" />
 
@@ -46,8 +54,12 @@
         android:layout_below="@id/thumbnailIcon"
         android:layout_marginTop="30dp"
         android:text="Wind"
+        android:shadowColor="@color/text_shadow_white"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="10"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textColor="#fff"
+        android:textColor="@color/text_color_default"
         android:textSize="25sp"
         android:textStyle="bold" />
 
@@ -58,7 +70,11 @@
         android:layout_below="@id/windText"
         android:layout_marginTop="5dp"
         android:text="Cloud"
-        android:textColor="#fff"
+        android:shadowColor="@color/text_shadow_white"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="10"
+        android:textColor="@color/text_color_default"
         android:textSize="25sp"
         android:textStyle="bold" />
 
@@ -70,16 +86,20 @@
         android:layout_below="@id/cloudText"
         android:layout_marginTop="5dp"
         android:text="Humidity"
-        android:textColor="#fff"
+        android:shadowColor="@color/text_shadow_white"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="10"
+        android:textColor="@color/text_color_default"
         android:textSize="25sp"
         android:textStyle="bold" />
 
     <EditText
         android:id="@+id/weather_search"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Change Location : Fremont,US"
-        android:textColor="#fff"
+        android:text=" Enter a City "
+        android:textColor="@color/text_color_default"
         android:textSize="25sp"
         android:textStyle="bold"
         android:layout_marginTop="30dp"
@@ -95,8 +115,10 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="32dp"
         android:elevation="0dp"
-        android:text="Change City Location"
-        android:textSize="36sp" />
+        android:background="@color/colorPrimaryDark"
+        android:text="Change City"
+        android:textColor="@color/text_color_default"
+        android:textSize="25sp" />
 
 
 </RelativeLayout>

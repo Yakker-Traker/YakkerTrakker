@@ -18,10 +18,10 @@
             android:id="@+id/RouteNametb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:shadowColor="@color/text_shadow"
+            android:shadowColor="@color/text_shadow_white"
             android:shadowDx="1"
             android:shadowDy="1"
-            android:shadowRadius="10"
+            android:shadowRadius="5"
             android:textColor="@color/text_color_default"/>
 
     </android.support.design.internal.ForegroundLinearLayout>
