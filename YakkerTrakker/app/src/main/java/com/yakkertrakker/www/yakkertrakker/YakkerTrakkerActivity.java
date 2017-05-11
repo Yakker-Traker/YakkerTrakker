@@ -113,6 +113,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         routeStarted = false;
         localDB = new Yak_Trak_SQLite(this);
         localDB.insertTideData();
+      //  String a = localDB.getTideFromDataBase("Richmond, CA "); // For testing
         final String title = "Trakker";
 
         Calendar myCal = Calendar.getInstance();
