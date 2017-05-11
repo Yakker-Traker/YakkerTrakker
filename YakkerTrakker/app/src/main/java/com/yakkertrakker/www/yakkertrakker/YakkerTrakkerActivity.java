@@ -600,6 +600,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             curCoord = new Coordinates(temp.getLatitude(), temp.getLongitude(), routeName);
             localDB.addCoordinateIntoDataBase(curCoord);
         }
+
         savedRoutesFragment fragment = new savedRoutesFragment();
         android.support.v4.app.FragmentTransaction fragmentTransaction =
                 getSupportFragmentManager().beginTransaction();
@@ -670,11 +671,6 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 }
             }
         });
-
-
-
-
-
 
     }
 
