@@ -93,7 +93,7 @@ public class savedRoutesFragment extends ListFragment implements OnItemClickList
     public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
 
         //---------------------------------------
-/*
+
         final AlertDialog dialog = new AlertDialog.Builder(savedRoutesFragment.this.getContext()).create();
 
         dialog.setTitle("Enter a Route Name");
@@ -130,9 +130,9 @@ public class savedRoutesFragment extends ListFragment implements OnItemClickList
                 dialog.dismiss();
             }
         });
-*/
-        //---------------------------------------
 
+        //---------------------------------------
+/*
 
         Yak_Trak_SQLite db = new Yak_Trak_SQLite(getActivity());
         List<Routes> rList = db.getAllRoutesFromDataBase();
@@ -197,7 +197,7 @@ public class savedRoutesFragment extends ListFragment implements OnItemClickList
             setListAdapter(adapter);
         }
 
-
+*/
 
     }
 
