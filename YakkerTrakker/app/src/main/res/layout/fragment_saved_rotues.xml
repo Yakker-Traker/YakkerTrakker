@@ -1,8 +1,10 @@
 <ListView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/saveRouteListView"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#fff"
-    tools:context="com.yakkertrakker.www.yakkertrakker.savedRoutesFragment" />
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/saveRouteListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#fff"
+        tools:context="com.yakkertrakker.www.yakkertrakker.savedRoutesFragment">
+
+</ListView>
+

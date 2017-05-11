@@ -112,6 +112,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         setContentView(R.layout.activity_yakker_trakker);
         routeStarted = false;
         localDB = new Yak_Trak_SQLite(this);
+        localDB.insertTideData();
         final String title = "Trakker";
 
         Calendar myCal = Calendar.getInstance();
@@ -599,6 +600,11 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             curCoord = new Coordinates(temp.getLatitude(), temp.getLongitude(), routeName);
             localDB.addCoordinateIntoDataBase(curCoord);
         }
+        savedRoutesFragment fragment = new savedRoutesFragment();
+        android.support.v4.app.FragmentTransaction fragmentTransaction =
+                getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.content_frame, fragment);
+        fragmentTransaction.commit();
 
         TextView timeText = (TextView) findViewById(R.id.time_window);
         TextView speedText = (TextView) findViewById(R.id.speed_window);
@@ -664,6 +670,12 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                 }
             }
         });
+
+
+
+
+
+
     }
 
     private void commentDialog(String name){

@@ -15,7 +15,7 @@ import java.util.List;
 
 public class Yak_Trak_SQLite extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 34;
+    private static final int DATABASE_VERSION = 57;
 
     private static final String DATABASE_NAME = "Yakker_Trakker_DB";
 
@@ -42,13 +42,131 @@ public class Yak_Trak_SQLite extends SQLiteOpenHelper {
                 "UNIQUE (latitude, longitude, route_name));";
         ytDatabase.execSQL(CREATE_COORDINATES_TABLE);
 
+        // CREATES THE TIDE_TABLES_TABLE
+        String CREATE_TIDES_TABLE = "CREATE TABLE tides ("+
+                "station_name TEXT UNIQUE," +
+                "station_id TEXT UNIQUE,"+
+                "latitude TEXT,"+
+                "longitude TEXT);";
+        ytDatabase.execSQL(CREATE_TIDES_TABLE);
+       // insertTideData();
     }
+
+    public void insertTideData () {
+        SQLiteDatabase ytDatabase = this.getWritableDatabase();
+        ytDatabase.delete("tides","station_name = ?",new String [] {"*"});
+
+        String TideData = "Richmond, CA - Station ID: 9414863\n" +
+                "Latitude\n" +
+                "37° 55.4' N\n" +
+                "Longitude\n" +
+                "122° 24.6' W\n" +
+                "\n" +
+                "San Francisco, CA - Station ID: 9414290\n" +
+                "Latitude\n" +
+                "37° 48.4' N\n" +
+                "Longitude\n" +
+                "122° 27.9' W\n" +
+                "\n" +
+                "Point Reyes, CA - Station ID: 9415020\n" +
+                "Latitude\n" +
+                "37° 59.8' N\n" +
+                "Longitude\n" +
+                "122° 58.6' W\n" +
+                "\n" +
+                "Monterey, CA - Station ID: 9413450\n" +
+                "Latitude\n" +
+                "36° 36.3' N\n" +
+                "Longitude\n" +
+                "121° 53.3' W\n" +
+                "\n" +
+                "Port San Luis, CA - Station ID: 9412110\n" +
+                "Latitude\n" +
+                "35° 10.1' N\n" +
+                "Longitude\n" +
+                "120° 45.2' W\n" +
+                "\n" +
+                "Santa Monica, CA - Station ID: 9410840\n" +
+                "Latitude\n" +
+                "34° 0.5' N\n" +
+                "Longitude\n" +
+                "118° 30' W\n" +
+                "\n" +
+                "La Jolla, CA - Station ID: 9410230\n" +
+                "Latitude\n" +
+                "32° 52' N\n" +
+                "Longitude\n" +
+                "117° 15.4' W\n" +
+                "\n" +
+                "Arena Cove, CA - Station ID: 9416841\n" +
+                "Latitude\n" +
+                "38° 54.9' N\n" +
+                "Longitude\n" +
+                "123° 42.7' W\n" +
+                "\n" +
+                "North Spit, CA - Station ID: 9418767\n" +
+                "Latitude\n" +
+                "40° 46' N\n" +
+                "Longitude\n" +
+                "124° 13' W\n";
+        TideData = TideData.replaceAll("[\n]","").replace("\r","");
+        int itr = 0;
+        for (int i = 0; i < 9; i++){
+            ContentValues values = new ContentValues();
+
+            String data = "";
+            while (TideData.charAt(itr) != '-') {
+                data += TideData.charAt(itr);
+                itr++;
+            }
+            values.put("station_name", data);
+            data = "";
+            while (TideData.charAt(itr) != '9') {
+                itr++;
+            }
+            while (TideData.charAt(itr) != 'L') {
+                data += TideData.charAt(itr);
+                itr++;
+            }
+            values.put("station_id", data);
+            data = "";
+            while (TideData.charAt(itr) != 'e') {
+                itr++;
+            }
+            itr++;
+            while (TideData.charAt(itr) != 'L') {
+                data += TideData.charAt(itr);
+                itr++;
+            }
+            values.put("latitude", data);
+            data = "";
+            while (TideData.charAt(itr) != 'e') {
+                itr++;
+            }
+            itr++;
+            while (TideData.charAt(itr) != 'N' && TideData.charAt(itr) != 'S'&& TideData.charAt(itr) != 'E' &&TideData.charAt(itr) != 'W') {
+                data += TideData.charAt(itr);
+                itr++;
+            }
+            data += TideData.charAt(itr);
+            values.put("longitude", data);
+            long inserted = ytDatabase.insert("tides", null, values);
+            itr++;
+        }
+
+    }
+
+
+
+
+
 
     @Override
     public void onUpgrade (SQLiteDatabase ytDatabase, int oldVersion, int newVersion){
         ytDatabase.execSQL(("DROP TABLE IF EXISTS test"));
         ytDatabase.execSQL("DROP TABLE IF EXISTS routes");
         ytDatabase.execSQL("DROP TABLE IF EXISTS coordinates");
+        ytDatabase.execSQL("DROP TABLE IF EXISTS tides");
 
         this.onCreate(ytDatabase);
     }

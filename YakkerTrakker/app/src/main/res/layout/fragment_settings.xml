@@ -14,7 +14,6 @@
             android:text="Units: "
             android:textAlignment="center"
             android:layout_marginEnd="24dp"
-            android:layout_alignBottom="@+id/units_spinner"
             android:layout_toStartOf="@+id/units_spinner"
             android:layout_alignParentTop="true" />
 
@@ -42,7 +41,6 @@
         android:id="@+id/map_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignAbove="@+id/units_spinner"
         android:layout_gravity="center_horizontal"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true">
