@@ -44,30 +44,13 @@ public class savedRoutesFragment extends ListFragment implements OnItemClickList
 
 
     ArrayList<String> selected = new ArrayList<String>();
-
+    String routeNameTransfer = getResources().getString(R.string.key_currentRoute);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         Yak_Trak_SQLite db = new Yak_Trak_SQLite(getActivity());
-        // For Testing Purposes.
-        //  Routes a = new Routes("Route1", "04/23/1232", "It was a hot day");
-        //  Routes b = new Routes("Route2", "04/21/1998", "It was a cold day");
-
-        //db.addRouteIntoDataBase(a);
-
-/*
-        Routes c = new Routes("Delete Selected Routes", "", "");
-        boolean found = db.findRouteInDataBase("Delete Selected Routes");
-        if (found == false)
-            db.addRouteIntoDataBase(c);
-        else {
-            db.deleteRouteFromDataBase(c.getRoute_name());
-            db.addRouteIntoDataBase(c);
-
-        }
-        */
         List<Routes> rList = db.getAllRoutesFromDataBase();
         int size = rList.size();
         String[] routeNames = new String[size];
@@ -97,7 +80,7 @@ public class savedRoutesFragment extends ListFragment implements OnItemClickList
         //---------------------------------------
 
         final AlertDialog dialog = new AlertDialog.Builder(savedRoutesFragment.this.getContext()).create();
-
+        dialog.setTitle("Route Options");
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -215,6 +198,12 @@ public class savedRoutesFragment extends ListFragment implements OnItemClickList
 
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putString(getResources().getString(R.string.key_currentRoute), routeNameTransfer);
+    }
+
     private void refreshList(AdapterView<?> parent, View view, final int position, long id) {
 
 
@@ -254,47 +243,18 @@ public class savedRoutesFragment extends ListFragment implements OnItemClickList
 
     private void setCurrentRoute(final AdapterView<?> parent, final View view, final int position, final long id){
 
-        Yak_Trak_SQLite db = new Yak_Trak_SQLite(getActivity());
-        List<Routes> rList = db.getAllRoutesFromDataBase();
-        int size = rList.size();
-
-        rList = db.getAllRoutesFromDataBase();
-        size = rList.size();
         TextView r = (TextView) view.findViewById(R.id.RouteNametb);
-
-        String[] routeNames = new String[size];
-        for (int i = 0; i < rList.size(); i++) {
-            Routes temp = rList.get(i);
-            routeNames[i] = temp.getRoute_name();
-            //Toast.makeText(getActivity(), routeNames[i], Toast.LENGTH_SHORT).show();
-        }
 
         String tempName = r.getText().toString();
         String[] tokens = tempName.split("\t");
-        tempName = tokens[0];
-
-
-        for(int i = 0; i < rList.size(); i++){
-            String temp1 = routeNames[i];
-            if(temp1.equals(tempName)){
-                Routes tempRoute = rList.get(i);
-                Routes currentRoute = tempRoute;
-                currentRoute.setRoute_name("Current");
-                db.addRouteIntoDataBase(currentRoute);
-                List<Coordinates> tempList = db.getCoordinatesInRoute(tempRoute);
-                for(int j = 0; j < tempList.size(); j++){
-                    Coordinates tempCoord = tempList.get(i);
-                    tempCoord.setRoute_name("Current");
-                    db.addCoordinateIntoDataBase(tempCoord);
-                }
-            }
-        }
+        routeNameTransfer = tokens[0];
 
         final android.support.v4.app.Fragment fragment = new Fragment();
         android.support.v4.app.FragmentTransaction fragmentTransaction = savedRoutesFragment.this.getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.content_frame, fragment);
         fragmentTransaction.commit();
     }
+
 
 }
 

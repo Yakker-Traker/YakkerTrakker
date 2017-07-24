@@ -102,6 +102,8 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     private ToggleButton openDrawer;
     Button clear;
     private android.app.ProgressDialog pDialog;
+    private boolean debug;
+    private String routeNameTransfer;
 
     Yak_Trak_SQLite localDB;
 
@@ -115,6 +117,11 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         localDB.insertTideData();
       //  String a = localDB.getTideFromDataBase("Richmond, CA "); // For testing
         final String title = "Trakker";
+
+        debug = true;
+        if(debug == true){
+            testDatabase();
+        }
 
         Calendar myCal = Calendar.getInstance();
         String routeDate = new StringBuilder().append(String.valueOf(myCal.get(Calendar.MONTH))).append("-").append(String.valueOf(myCal.get(Calendar.DATE))).append("-").append(String.valueOf(myCal.get(Calendar.YEAR))).toString();
@@ -173,27 +180,27 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         }
     });
 
-        if(localDB.findRouteInDataBase("Current")) {
-            List<Routes> rList = localDB.getAllRoutesFromDataBase();
-            List<Coordinates> coordList;
-            for (int i = 0; i < rList.size(); i++) {
-                Routes tempRoute = rList.get(i);
-                if (tempRoute.getRoute_name().equals("Current")) {
-                    coordList = localDB.getCoordinatesInRoute(tempRoute);
-                    for (int j = 0; j < coordList.size(); j++) {
-                        Coordinates tempCoord = coordList.get(i);
-                        Location tempLoc = new Location("");
-                        tempLoc.setLatitude(tempCoord.getLatitude());
-                        tempLoc.setLongitude(tempCoord.getLongitude());
-                        myRoute.add(tempLoc);
-                        makeMarker(tempLoc);
-                    }
-                    localDB.deleteRouteFromDataBase(tempRoute.getRoute_name());
-                }
-            }
-        }
+
     }
 
+    void testDatabase(){
+        //39, -123
+        int tempLat = 39;
+        int tempLong = -123;
+        Routes currentRoute = new Routes();
+        Coordinates currentCoord;
+
+        currentRoute.setRoute_name(getResources().getString(R.string.key_currentRoute));
+        localDB.addRouteIntoDataBase(currentRoute);
+        for(int i = 0; i < 10; i++){
+            currentCoord  = new Coordinates();
+            currentCoord.setRoute_name(getResources().getString(R.string.key_currentRoute));
+            currentCoord.setLatitude(tempLat+i);
+            currentCoord.setLongitude(tempLong+i);
+            localDB.addCoordinateIntoDataBase(currentCoord);
+        }
+        return;
+    }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu){
@@ -293,21 +300,33 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             if(myBundle.containsKey(getResources().getString(R.string.key_sec))){
                 startSec = myBundle.getInt(getResources().getString(R.string.key_sec));
             }
-        }
-
-        if(myBundle != null){
+            if(myBundle.containsKey(getResources().getString(R.string.key_routeStarted))){
+                routeStarted = myBundle.getBoolean(getResources().getString(R.string.key_routeStarted));
+            }
+            if(myBundle.containsKey(getResources().getString(R.string.key_currentRoute))){
+                routeNameTransfer = myBundle.getString(getResources().getString(R.string.key_currentRoute));
+                myBundle.remove(getResources().getString(R.string.key_currentRoute));
+            }
             if(myBundle.containsKey(getResources().getString(R.string.key_route))){
                 myRoute = myBundle.getParcelableArrayList(getResources().getString(R.string.key_route));
+                if(localDB.findRouteInDataBase(routeNameTransfer) == true){
+                    Routes tempRoute = new Routes();
+                    tempRoute.setRoute_name(routeNameTransfer);
+                    List<Coordinates> tempCoordList = localDB.getCoordinatesInRoute(tempRoute);
+                    for(int i = 0; i < tempCoordList.size(); i++){
+                        Coordinates tempCoord = tempCoordList.get(i);
+                        Location tempLoc = new Location(new StringBuilder().append(tempCoord.getLatitude()).append(", ").append(tempCoord.getLongitude()).toString());
+                        tempLoc.setLongitude(tempCoord.getLongitude());
+                        tempLoc.setLatitude(tempCoord.getLatitude());
+                        myRoute.add(tempLoc);
+                    }
+                }
                 if(myRoute.isEmpty() == false){
                     for(int i = 0; i < myRoute.size(); i++){
                         Location temp = myRoute.get(i);
                         makeMarker(temp);
                     }
-
                 }
-            }
-            if(myBundle.containsKey(getResources().getString(R.string.key_routeStarted))){
-                routeStarted = myBundle.getBoolean(getResources().getString(R.string.key_routeStarted));
             }
         }
 
@@ -320,6 +339,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         */
+
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -411,6 +431,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
         if(mMap != null) {
             currLocationMarker = mMap.addMarker(markerOptions);
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         }
     }
 
@@ -598,10 +619,26 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
                     getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.content_frame, fragment);
             fragmentTransaction.commit();
+        } else if (id == R.id.refresh_map){
+            refreshMap();
         }
         openDrawer.setChecked(true);
         mDrawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void refreshMap(){
+        if(mMap != null){
+            /*
+            mMap.clear();
+            for(int i = 0; i < myRoute.size(); i++){
+                makeMarker(myRoute.get(i));
+            }
+            */
+            LatLng temp1 = new LatLng(myRoute.get(0).getLatitude(), myRoute.get(0).getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(temp1));
+        }
+        return;
     }
 
     private void routeFinished(String name, String comments){
@@ -697,7 +734,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
         input.setLayoutParams(oneInput);
         AlertDialog dialog = new AlertDialog.Builder(YakkerTrakkerActivity.this).create();
         dialog.setView(input);
-        dialog.setTitle("Enter a Route Name");
+        dialog.setTitle("Enter some comments");
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
