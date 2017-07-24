@@ -628,7 +628,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
     }
 
     private void refreshMap(){
-        if(mMap != null){
+        if(mMap != null && myRoute.size() > 0){
             /*
             mMap.clear();
             for(int i = 0; i < myRoute.size(); i++){
@@ -637,6 +637,7 @@ public class YakkerTrakkerActivity extends FragmentActivity implements OnMapRead
             */
             LatLng temp1 = new LatLng(myRoute.get(0).getLatitude(), myRoute.get(0).getLongitude());
             mMap.moveCamera(CameraUpdateFactory.newLatLng(temp1));
+
         }
         return;
     }
